@@ -38,9 +38,11 @@ public class IntDomainReverseBest implements IntValueSelector {
                 model.getSolver().getEngine().propagate();
                 // TODO use relaxed fixpoint instead
                 int best = fallbackValueSelector.selectValue(var); // pick the value
+                model.getSolver().getEngine().flush();
                 model.getEnvironment().worldPop(); // backtrack
                 return best;
             } catch (ContradictionException cex) {
+                model.getSolver().getEngine().flush();
                 model.getEnvironment().worldPop();
                 // failed to compute a valid value when assigning to the best bound
                 // the bound was not good enough, tighten it and do it again
