@@ -24,6 +24,7 @@ import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.decision.DecisionMakerTest;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainBest;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainLast;
+import org.chocosolver.solver.search.strategy.selectors.values.IntDomainReverseBest;
 import org.chocosolver.solver.search.strategy.selectors.variables.DomOverWDeg;
 import org.chocosolver.solver.search.strategy.strategy.IntStrategy;
 import org.chocosolver.solver.variables.BoolVar;
@@ -462,8 +463,47 @@ public class ObjectiveTest {
             }
             )
         ));
-        solver.setRestarts(c -> solver.getFailCount() > c, new LubyCutoff(2), 512);
-        solver.setNoGoodRecordingFromSolutions(ticks);
+        //solver.setRestarts(c -> solver.getFailCount() > c, new LubyCutoff(2), 512);
+        //solver.setNoGoodRecordingFromSolutions(ticks);
+        solver.showShortStatistics();
+        while (model.getSolver().solve()) {
+        }
+        assertFalse(model.getSolver().isStopCriterionMet());
+        assertEquals(solver.getBestSolutionValue(), 44);
+    }
+
+    @Test(groups = "10s", timeOut = 60000)
+    public void testCPReverseBest() {
+        Model model = makeGolombRuler(9);
+        IntVar objective = (IntVar) model.getHook("objective");
+        IntVar[] ticks = (IntVar[]) model.getHook("ticks");
+        Solver solver = model.getSolver();
+        model.setObjective(Model.MINIMIZE, objective);
+        Solution solution = new Solution(model, ticks);
+        solver.attach(solution);
+        int[] t = new int[2];
+
+        solver.setSearch(new IntStrategy(ticks, new DomOverWDeg(ticks, 0L),
+                new IntDomainLast(solution, new IntDomainReverseBest(),
+                        (x, v) -> {
+                            int c = 0;
+                            for (int idx = 0; idx < ticks.length; idx++) {
+                                if (ticks[idx].isInstantiatedTo(solution.getIntVal(ticks[idx]))) {
+                                    c++;
+                                }
+                            }
+                            double d =  (c * 1. / ticks.length);
+                            double r = Math.exp(-t[0]++ / 25.);
+                            if (solver.getRestartCount() > t[1]) {
+                                t[1] += 150;
+                                t[0] = 0;
+                            }
+                            return d > r;
+                        }
+                )
+        ));
+        //solver.setRestarts(c -> solver.getFailCount() > c, new LubyCutoff(2), 512);
+        //solver.setNoGoodRecordingFromSolutions(ticks);
         solver.showShortStatistics();
         while (model.getSolver().solve()) {
         }
