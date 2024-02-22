@@ -9,6 +9,7 @@
  */
 package org.chocosolver.solver.search.strategy.selectors.values;
 
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
 
@@ -29,6 +30,6 @@ public interface IntValueSelector  {
      *
      * @return the value, based on the domain of variable
      */
-    int selectValue(IntVar var);
+    int selectValue(IntVar var) throws ContradictionException;
 
 }

@@ -12,6 +12,7 @@ package org.chocosolver.solver.search.loop.move;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.objective.IObjectiveManager;
 import org.chocosolver.solver.search.limits.BacktrackCounter;
 import org.chocosolver.solver.search.strategy.decision.Decision;
@@ -143,7 +144,7 @@ public class MoveBinaryHBFS extends MoveBinaryDFS {
     }
 
     @Override
-    public boolean extend(Solver solver) {
+    public boolean extend(Solver solver) throws ContradictionException {
         boolean extend;
         // as we observe the number of backtracks, no limit can be reached on extend()
         if (current < copen.length) {

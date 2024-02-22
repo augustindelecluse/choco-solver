@@ -9,6 +9,7 @@
  */
 package org.chocosolver.solver.search.strategy.strategy;
 
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.strategy.assignments.DecisionOperator;
 import org.chocosolver.solver.search.strategy.assignments.DecisionOperatorFactory;
 import org.chocosolver.solver.search.strategy.decision.Decision;
@@ -88,7 +89,7 @@ public class IntStrategy extends AbstractStrategy<IntVar> {
 	}
 
 	@Override
-    public Decision<IntVar> computeDecision(IntVar variable) {
+    public Decision<IntVar> computeDecision(IntVar variable) throws ContradictionException  {
         if (variable == null || variable.isInstantiated()) {
             return null;
         }
@@ -98,7 +99,7 @@ public class IntStrategy extends AbstractStrategy<IntVar> {
 
     @SuppressWarnings({"unchecked"})
     @Override
-    public Decision<IntVar> getDecision() {
+    public Decision<IntVar> getDecision() throws ContradictionException {
         IntVar variable = variableSelector.getVariable(vars);
         return computeDecision(variable);
     }

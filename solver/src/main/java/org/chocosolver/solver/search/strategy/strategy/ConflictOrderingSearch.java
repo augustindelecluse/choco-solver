@@ -114,7 +114,7 @@ public class ConflictOrderingSearch<V extends Variable> extends AbstractStrategy
 
     @SuppressWarnings("unchecked")
     @Override
-    public Decision<V> getDecision() {
+    public Decision<V> getDecision() throws ContradictionException {
         V decVar = firstNotInst();
         if (decVar != null) {
             Decision d = mainStrategy.computeDecision(decVar);

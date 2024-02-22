@@ -9,6 +9,7 @@
  */
 package org.chocosolver.solver.search.strategy.strategy;
 
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorRestart;
 import org.chocosolver.solver.search.strategy.decision.Decision;
 import org.chocosolver.solver.variables.Variable;
@@ -84,7 +85,7 @@ public class MultiArmedBanditSequencer<V extends Variable> extends AbstractStrat
     }
 
     @Override
-    public Decision<V> computeDecision(V variable) {
+    public Decision<V> computeDecision(V variable) throws ContradictionException {
         if (variable == null || variable.isInstantiated()) {
             return null;
         }
@@ -92,7 +93,7 @@ public class MultiArmedBanditSequencer<V extends Variable> extends AbstractStrat
     }
 
     @Override
-    public Decision<V> getDecision() {
+    public Decision<V> getDecision() throws ContradictionException {
         return strategies[action].getDecision();
     }
 

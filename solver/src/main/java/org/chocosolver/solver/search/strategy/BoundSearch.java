@@ -61,7 +61,7 @@ public class BoundSearch extends AbstractStrategy<IntVar> {
     }
 
     @Override
-    public Decision<IntVar> getDecision() {
+    public Decision<IntVar> getDecision() throws ContradictionException {
         if (variable == null || variable.isInstantiated()) {
             Decision<IntVar> d = definedSearch.getDecision();
             vb.clear();

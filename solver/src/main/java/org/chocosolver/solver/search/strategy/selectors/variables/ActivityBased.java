@@ -14,6 +14,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.limits.ACounter;
 import org.chocosolver.solver.search.loop.monitors.IMonitorDownBranch;
 import org.chocosolver.solver.search.loop.monitors.IMonitorRestart;
@@ -218,7 +219,7 @@ public final class ActivityBased extends AbstractStrategy<IntVar> implements IMo
     }
 
     @Override
-    public Decision<IntVar> computeDecision(IntVar variable) {
+    public Decision<IntVar> computeDecision(IntVar variable) throws ContradictionException {
         if (variable == null || variable.isInstantiated()) {
             return null;
         }
@@ -239,7 +240,7 @@ public final class ActivityBased extends AbstractStrategy<IntVar> implements IMo
     }
 
     @Override
-    public Decision<IntVar> getDecision() {
+    public Decision<IntVar> getDecision() throws ContradictionException {
         IntVar best = null;
         bests.clear();
         double bestVal = -1.0d;

@@ -27,7 +27,7 @@ class RecursiveSearchLoop {
     RecursiveSearchLoop() {
     }
 
-    public static int dfs(Model model, AbstractStrategy strategy) {
+    public static int dfs(Model model, AbstractStrategy strategy) throws ContradictionException {
         // some preprocess for the first call
         int c = 0;
         try {
@@ -64,7 +64,7 @@ class RecursiveSearchLoop {
         return c;
     }
 
-    public static int lds(Model model, AbstractStrategy strategy, int dis) {
+    public static int lds(Model model, AbstractStrategy strategy, int dis) throws ContradictionException {
         int c = 0;
         try {
             model.getSolver().getEngine().propagate();
@@ -102,7 +102,7 @@ class RecursiveSearchLoop {
         return c;
     }
 
-    public static int dds(Model model, AbstractStrategy strategy, int dis, int dep) {
+    public static int dds(Model model, AbstractStrategy strategy, int dis, int dep) throws ContradictionException {
         int c = 0;
         try {
             model.getSolver().getEngine().propagate();
@@ -145,7 +145,7 @@ class RecursiveSearchLoop {
     }
 
 
-    public static int ilds(Model model, AbstractStrategy strategy, int dis, int dep) {
+    public static int ilds(Model model, AbstractStrategy strategy, int dis, int dep) throws ContradictionException {
         int c = 0;
         try {
             model.getSolver().getEngine().propagate();

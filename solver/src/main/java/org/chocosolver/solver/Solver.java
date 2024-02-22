@@ -528,8 +528,15 @@ public class Solver implements ISolver, IMeasures, IOutputFactory {
         action = propagate;
         if (restarter.mustRestart(this)) {
             this.restart();
-        } else if (!M.extend(this)) {
-            action = validate;
+        } else {
+            try {
+                // TODO check if backtrack is correctly done with modifications
+                if (!M.extend(this)) {
+                    action = validate;
+                }
+            } catch (ContradictionException cex) {
+                action = repair;
+            }
         }
         searchMonitors.afterOpenNode();
     }

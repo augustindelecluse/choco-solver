@@ -42,7 +42,7 @@ import static org.testng.Assert.assertTrue;
 public class StrategyTest {
 
     @Test(groups="1s", timeOut=60000)
-    public void AssignmentTest() {
+    public void AssignmentTest() throws ContradictionException {
         int n = 100;
 
         Model s = new Model();
@@ -62,7 +62,7 @@ public class StrategyTest {
         testStrat(stack, variables, n, r);
     }
 
-    private void testStrat(ArrayDeque<Decision> stack, IntVar[] variables, int n, Solver r) {
+    private void testStrat(ArrayDeque<Decision> stack, IntVar[] variables, int n, Solver r) throws ContradictionException {
         IEnvironment env = r.getEnvironment();
         Decision decision = stack.peek();
         for (int i = 0; i < n; i++) {
@@ -94,7 +94,7 @@ public class StrategyTest {
     }
 
     @Test(groups="1s", timeOut=60000)
-    public void AssignmentTest2() {
+    public void AssignmentTest2() throws ContradictionException {
         int n = 100;
 
         Model s = new Model();

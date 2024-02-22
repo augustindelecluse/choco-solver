@@ -13,6 +13,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Settings;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.propagation.PropagationProfiler;
 import org.chocosolver.solver.search.limits.NodeCounter;
 import org.chocosolver.solver.search.loop.lns.neighbors.RandomNeighborhood;
@@ -278,15 +279,27 @@ public class SolverTest {
         boolean search = true;
         while (search) {
             if (solver.moveForward(dec)) {
-                dec = strategy.getDecision();
-                if (dec == null) {
-                    sol++;
-                } else {
-                    continue;
+                try {
+                    dec = strategy.getDecision();
+                    if (dec == null) {
+                        sol++;
+                    } else {
+                        continue;
+                    }
+                } catch (ContradictionException cex) {
+
                 }
             }
             search = solver.moveBackward();
-            dec = strategy.getDecision();
+            boolean correct = false;
+            while (!correct) {
+                try {
+                    dec = strategy.getDecision();
+                    correct = true;
+                } catch (ContradictionException cex) {
+                    search = solver.moveBackward();
+                }
+            }
         }
         return sol;
     }

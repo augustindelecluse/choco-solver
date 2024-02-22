@@ -9,6 +9,7 @@
  */
 package org.chocosolver.solver.search.strategy.strategy;
 
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.strategy.assignments.DecisionOperator;
 import org.chocosolver.solver.search.strategy.assignments.DecisionOperatorFactory;
 import org.chocosolver.solver.search.strategy.decision.Decision;
@@ -43,7 +44,7 @@ public class FullyRandom extends IntStrategy {
     }
 
     @Override
-    public Decision<IntVar> computeDecision(IntVar variable) {
+    public Decision<IntVar> computeDecision(IntVar variable) throws ContradictionException {
         if (variable == null || variable.isInstantiated()) {
             return null;
         }

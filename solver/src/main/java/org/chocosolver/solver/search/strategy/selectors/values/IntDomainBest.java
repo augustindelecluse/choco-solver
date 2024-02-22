@@ -148,7 +148,7 @@ public final class IntDomainBest implements IntValueSelector {
      * {@inheritDoc}
      */
     @Override
-    public int selectValue(IntVar var) {
+    public int selectValue(IntVar var) throws ContradictionException {
         if (!trigger.apply(var)) {
             return fallbackValueSelector.selectValue(var);
         }

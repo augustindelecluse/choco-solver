@@ -107,7 +107,7 @@ public class LastConflict<V extends Variable> extends AbstractStrategy<V> implem
 
     @SuppressWarnings("unchecked")
     @Override
-    public Decision<V> getDecision() {
+    public Decision<V> getDecision() throws ContradictionException {
         if (active) {
             V decVar = firstNotInst();
             if (decVar != null) {

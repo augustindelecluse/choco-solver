@@ -10,6 +10,7 @@
 package org.chocosolver.solver.search.strategy.strategy;
 
 import org.chocosolver.solver.Model;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.strategy.decision.Decision;
 import org.chocosolver.solver.variables.Variable;
 
@@ -58,7 +59,7 @@ public class FindAndProve<V extends Variable> extends AbstractStrategy<V>{
 	}
 
 	@Override
-	public Decision<V> getDecision() {
+	public Decision<V> getDecision() throws ContradictionException {
 		if (model.getSolver().getSolutionCount() == 0) {
 			return find.getDecision();
 		}
@@ -66,7 +67,7 @@ public class FindAndProve<V extends Variable> extends AbstractStrategy<V>{
 	}
 
 	@Override
-	public Decision<V> computeDecision(V variable) {
+	public Decision<V> computeDecision(V variable) throws ContradictionException {
 		if (model.getSolver().getSolutionCount() == 0) {
 			return find.computeDecision(variable);
 		}

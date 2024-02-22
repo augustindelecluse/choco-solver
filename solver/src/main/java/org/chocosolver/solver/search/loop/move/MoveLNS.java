@@ -125,7 +125,7 @@ public class MoveLNS implements Move {
      * @return true if the decision path is extended
      */
     @Override
-    public boolean extend(Solver solver) {
+    public boolean extend(Solver solver) throws ContradictionException {
         boolean extend;
         // when a new fragment is needed (condition: at least one solution has been found)
         if (solutions > 0 || solutionLoaded) {

@@ -10,6 +10,7 @@
 package org.chocosolver.solver.search.loop.move;
 
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.strategy.decision.Decision;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.variables.Variable;
@@ -57,7 +58,7 @@ public class MoveBinaryDFS implements Move {
     }
 
     @Override
-    public boolean extend(Solver solver) {
+    public boolean extend(Solver solver) throws ContradictionException {
         boolean extended = false;
         Decision current = strategy.getDecision();
         if (current != null) { // null means there is no more decision

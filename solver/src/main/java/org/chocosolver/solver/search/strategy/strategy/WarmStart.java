@@ -12,6 +12,7 @@ package org.chocosolver.solver.search.strategy.strategy;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.strategy.assignments.DecisionOperatorFactory;
 import org.chocosolver.solver.search.strategy.decision.Decision;
@@ -123,7 +124,7 @@ public class WarmStart extends AbstractStrategy<Variable> implements IMonitorSol
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Decision getDecision() {
+    public Decision getDecision() throws ContradictionException {
         Decision dec = mainStrategy.getDecision();
         if (solCount < 1 && dec != null) {
             Variable var = dec.getDecisionVariable();

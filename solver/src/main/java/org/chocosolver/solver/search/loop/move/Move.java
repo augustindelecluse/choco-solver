@@ -10,6 +10,7 @@
 package org.chocosolver.solver.search.loop.move;
 
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.variables.Variable;
 
@@ -41,7 +42,7 @@ public interface Move  {
      * @param solver reference the solver
      * @return {@code true} if an extension can be done, {@code false} when no more extension is possible.
      */
-    boolean extend(Solver solver);
+    boolean extend(Solver solver) throws ContradictionException;
 
     /**
      * Performs a move when the CSP associated to the current node of the search space is proven to be not consistent.

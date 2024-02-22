@@ -112,7 +112,7 @@ public class ImpactBased extends AbstractStrategy<IntVar> implements IMonitorDow
     }
 
     @Override
-    public Decision<IntVar> computeDecision(IntVar variable) {
+    public Decision<IntVar> computeDecision(IntVar variable) throws ContradictionException {
         if (variable == null || variable.isInstantiated()) {
             return null;
         }
@@ -130,7 +130,7 @@ public class ImpactBased extends AbstractStrategy<IntVar> implements IMonitorDow
     }
 
     @Override
-    public Decision<IntVar> getDecision() {
+    public Decision<IntVar> getDecision() throws ContradictionException {
         reevaluateImpact();
         IntVar best = null;
         // 1. first select the variable with the largest impact

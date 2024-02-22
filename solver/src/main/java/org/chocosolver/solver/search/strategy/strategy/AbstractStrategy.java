@@ -9,6 +9,7 @@
  */
 package org.chocosolver.solver.search.strategy.strategy;
 
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.strategy.assignments.DecisionOperatorFactory;
 import org.chocosolver.solver.search.strategy.decision.Decision;
 import org.chocosolver.solver.search.strategy.decision.IntDecision;
@@ -52,7 +53,7 @@ public abstract class AbstractStrategy<V extends Variable>  {
      *
      * @return the current decision
      */
-    public abstract Decision<V> getDecision();
+    public abstract Decision<V> getDecision() throws ContradictionException;
 
     /**
      * Creates a <code>String</code> object containing a pretty print of the current variables.
@@ -74,7 +75,7 @@ public abstract class AbstractStrategy<V extends Variable>  {
      * @param var a variable
      * @return a decision to be applied to variable var
      */
-    public Decision<V> computeDecision(V var) {
+    public Decision<V> computeDecision(V var) throws ContradictionException {
         return null;
     }
 

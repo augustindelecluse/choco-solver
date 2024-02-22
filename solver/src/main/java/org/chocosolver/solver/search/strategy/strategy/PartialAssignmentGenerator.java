@@ -11,6 +11,7 @@ package org.chocosolver.solver.search.strategy.strategy;
 
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorRestart;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.restart.AbstractRestart;
@@ -107,7 +108,7 @@ public class PartialAssignmentGenerator<V extends Variable> extends AbstractStra
     }
 
     @Override
-    public Decision<V> getDecision() {
+    public Decision<V> getDecision() throws ContradictionException {
         while (!subtree.isEmpty()) {
             Assignment as = subtree.removeFirst();
             int currentVar = as.varID;

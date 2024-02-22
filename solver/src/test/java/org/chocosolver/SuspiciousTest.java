@@ -11,6 +11,7 @@ package org.chocosolver;
 
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.limits.FailCounter;
 import org.chocosolver.solver.search.limits.NodeCounter;
 import org.chocosolver.solver.search.loop.lns.neighbors.IntNeighbor;
@@ -50,7 +51,7 @@ public class SuspiciousTest {
         Move currentMove = model.getSolver().getMove();
         model.getSolver().setMove(new MoveLNS(currentMove, rnd, new FailCounter(model, 100)) {
             @Override
-            public boolean extend(Solver solver) {
+            public boolean extend(Solver solver) throws ContradictionException {
                 if (nodeCounter.isMet()) {
                     return super.extend(solver);
                 }

@@ -10,6 +10,7 @@
 package org.chocosolver.solver.search.strategy.selectors.values;
 
 import org.chocosolver.solver.Solution;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.function.BiPredicate;
@@ -58,7 +59,7 @@ public final class IntDomainLast implements IntValueSelector {
      * {@inheritDoc}
      */
     @Override
-    public int selectValue(IntVar var) {
+    public int selectValue(IntVar var) throws ContradictionException {
         if (lastSolution.exists()) {
             int value = lastSolution.getIntVal(var);
             if (relevant(var, value) && condition.test(var, value)) {

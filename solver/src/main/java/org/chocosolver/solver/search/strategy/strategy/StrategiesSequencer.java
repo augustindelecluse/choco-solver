@@ -11,6 +11,7 @@ package org.chocosolver.solver.search.strategy.strategy;
 
 import org.chocosolver.memory.IEnvironment;
 import org.chocosolver.memory.IStateInt;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.strategy.decision.Decision;
 import org.chocosolver.solver.variables.Variable;
 import org.chocosolver.util.tools.ArrayUtils;
@@ -74,7 +75,7 @@ public class StrategiesSequencer<U extends Variable> extends AbstractStrategy<U>
     }
 
     @Override
-    public Decision<U> computeDecision(U variable) {
+    public Decision<U> computeDecision(U variable) throws ContradictionException {
         if (variable == null || variable.isInstantiated()) {
             return null;
         }
@@ -103,7 +104,7 @@ public class StrategiesSequencer<U extends Variable> extends AbstractStrategy<U>
      * Iterates over the declared sub-strategies and gets the overall current decision.
      */
     @Override
-    public Decision<U> getDecision() {
+    public Decision<U> getDecision() throws ContradictionException {
         int idx = (index==null)?0:index.get();
         Decision<U> decision = strategies[idx].getDecision();
         while (decision == null && idx < strategies.length - 1) {

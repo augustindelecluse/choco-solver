@@ -9,6 +9,7 @@
  */
 package org.chocosolver.solver.search.strategy.strategy;
 
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.strategy.decision.Decision;
 import org.chocosolver.solver.variables.Variable;
 
@@ -33,7 +34,7 @@ public class GreedyBranching extends AbstractStrategy {
     }
 
     @Override
-    public Decision getDecision() {
+    public Decision getDecision() throws ContradictionException {
         Decision d = mainSearch.getDecision();
         if (d != null) {
             d.setRefutable(false);
@@ -42,7 +43,7 @@ public class GreedyBranching extends AbstractStrategy {
     }
 
     @Override
-    public Decision computeDecision(Variable variable) {
+    public Decision computeDecision(Variable variable) throws ContradictionException {
         //noinspection unchecked
         Decision d = mainSearch.computeDecision(variable);
         if (d != null) {

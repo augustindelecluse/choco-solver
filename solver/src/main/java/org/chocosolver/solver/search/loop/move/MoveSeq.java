@@ -12,6 +12,7 @@ package org.chocosolver.solver.search.loop.move;
 import org.chocosolver.memory.IStateInt;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.search.strategy.strategy.StrategiesSequencer;
 import org.chocosolver.solver.variables.Variable;
@@ -71,7 +72,7 @@ public class MoveSeq implements Move {
     }
 
     @Override
-    public boolean extend(Solver solver) {
+    public boolean extend(Solver solver) throws ContradictionException {
         boolean extend = false;
         int i = index.get();
         // if the current Move is able to extend the decision path
