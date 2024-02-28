@@ -26,19 +26,28 @@ public class IntDomainReverseBest implements IntValueSelector {
         ResolutionPolicy rp = model.getSolver().getObjectiveManager().getPolicy();
         if (rp == ResolutionPolicy.SATISFACTION)
             throw new RuntimeException("IntDomainReverseBest should only be used for optimisation problems");
+        int delta = 1;
+        IntVar objective = (IntVar) model.getObjective();
         while (true) {
             model.getEnvironment().worldPush(); // save the state
-            // TODO use more aggressive strategy: increment by 1, then 2, then 4 etc
             try {
+                /*
+                Test incrementally with more and more values available for the objective. If minimization:
+                iter 0: objective is {lb}
+                iter 1: objective is {lb+1, lb+2}
+                iter 1: objective is {lb+3, lb+4, lb+5, lb+6}
+                etc.
+                 */
                 if (rp == ResolutionPolicy.MINIMIZE) { // fix to the lower bound
-                    ((IntVar) model.getObjective()).instantiateTo(((IntVar) model.getObjective()).getLB(), Cause.Null);
+                    objective.updateUpperBound(boundWithDelta(objective, rp, delta), Cause.Null);
                 } else { // fix to the upper bound
-                    ((IntVar) model.getObjective()).instantiateTo(((IntVar) model.getObjective()).getUB(), Cause.Null);
+                    objective.updateLowerBound(boundWithDelta(objective, rp, delta), Cause.Null);
                 }
                 // trigger the fixpoint and pick the best value for the variable
                 int best = selectWithPropagate(var);
                 model.getSolver().getEngine().flush();
                 model.getEnvironment().worldPop(); // backtrack
+                //System.exit(1);
                 return best;
             } catch (ContradictionException cex) {
                 model.getSolver().getEngine().flush();
@@ -48,11 +57,20 @@ public class IntDomainReverseBest implements IntValueSelector {
                 // if the domain becomes emptied, a contradiction is thrown, caught at the dfs level and
                 // a backtrack will occur
                 if (rp == ResolutionPolicy.MINIMIZE) {
-                    ((IntVar) model.getObjective()).removeValue(((IntVar) model.getObjective()).getLB(), Cause.Null);
+                    objective.updateLowerBound(boundWithDelta(objective, rp, delta) + 1, Cause.Null);
                 } else {
-                    ((IntVar) model.getObjective()).removeValue(((IntVar) model.getObjective()).getUB(), Cause.Null);
+                    objective.updateUpperBound(boundWithDelta(objective, rp, delta) - 1, Cause.Null);
                 }
+                delta *= 2;
             }
+        }
+    }
+
+    public int boundWithDelta(IntVar var, ResolutionPolicy rp, int delta) {
+        if (rp == ResolutionPolicy.MINIMIZE) {
+            return var.getLB() - 1 + delta;
+        } else {
+            return var.getUB() + 1 - delta;
         }
     }
 
