@@ -269,6 +269,7 @@ public class PropSum extends Propagator<IntVar> {
                 return;
             }
         }while (anychange) ;
+        int a = 0;
     }
 
     /**

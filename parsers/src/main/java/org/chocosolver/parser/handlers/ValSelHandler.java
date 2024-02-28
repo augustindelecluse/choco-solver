@@ -48,7 +48,7 @@ public class ValSelHandler extends OneArgumentOptionHandler<SearchParams.ValSelC
         if (pars.length == 4) {
             return new SearchParams.ValSelConf(
                     SearchParams.ValueSelection.valueOf(pars[0].toUpperCase()),
-                    Boolean.parseBoolean(pars[1]),
+                    Boolean.parseBoolean(pars[1]) ? SearchParams.BestSelection.BEST : SearchParams.BestSelection.NONE,
                     Integer.parseInt(pars[2]),
                     Boolean.parseBoolean(pars[3])
             );

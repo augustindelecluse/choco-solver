@@ -28,6 +28,7 @@ public class IntDomainReverseBest implements IntValueSelector {
             throw new RuntimeException("IntDomainReverseBest should only be used for optimisation problems");
         while (true) {
             model.getEnvironment().worldPush(); // save the state
+            // TODO use more aggressive strategy: increment by 1, then 2, then 4 etc
             try {
                 if (rp == ResolutionPolicy.MINIMIZE) { // fix to the lower bound
                     ((IntVar) model.getObjective()).instantiateTo(((IntVar) model.getObjective()).getLB(), Cause.Null);
@@ -35,9 +36,7 @@ public class IntDomainReverseBest implements IntValueSelector {
                     ((IntVar) model.getObjective()).instantiateTo(((IntVar) model.getObjective()).getUB(), Cause.Null);
                 }
                 // trigger the fixpoint and pick the best value for the variable
-                model.getSolver().getEngine().propagate();
-                // TODO use relaxed fixpoint instead
-                int best = fallbackValueSelector.selectValue(var); // pick the value
+                int best = selectWithPropagate(var);
                 model.getSolver().getEngine().flush();
                 model.getEnvironment().worldPop(); // backtrack
                 return best;
@@ -56,4 +55,13 @@ public class IntDomainReverseBest implements IntValueSelector {
             }
         }
     }
+
+    protected int selectWithPropagate(IntVar variableToSelect) throws ContradictionException {
+        // TODO use relaxed fixpoint instead
+        // TODO check with calls to variable.swapOnPassivate() to deactivate propagators
+        variableToSelect.getModel().getSolver().getEngine().propagate();
+        return fallbackValueSelector.selectValue(variableToSelect); // pick the value
+    }
+
+
 }

@@ -209,10 +209,12 @@ public class Flatzinc extends RegParser {
     @Override
     public void freesearch(Solver solver) {
         BlackBoxConfigurator bb = BlackBoxConfigurator.init();
-        boolean opt = solver.getObjectiveManager().isOptimization();
+        boolean isOpt = solver.getObjectiveManager().isOptimization();
+        SearchParams.BestSelection opt = isOpt ? SearchParams.BestSelection.BEST : SearchParams.BestSelection.NONE;
+
         // variable selection
         SearchParams.ValSelConf defaultValSel = new SearchParams.ValSelConf(
-                SearchParams.ValueSelection.MIN, opt, 1, opt);
+                SearchParams.ValueSelection.MIN, opt, 1, isOpt);
         SearchParams.VarSelConf defaultVarSel = new SearchParams.VarSelConf(
                 SearchParams.VariableSelection.DOMWDEG, Integer.MAX_VALUE);
         bb.setIntVarStrategy((vars) -> defaultVarSel.make().apply(vars, defaultValSel.make().apply(vars[0].getModel())));

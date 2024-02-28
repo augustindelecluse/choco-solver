@@ -189,6 +189,10 @@ public class PropagationEngine {
         return init;
     }
 
+    public List<Propagator<?>> getPropagators() {
+        return propagators;
+    }
+
     /**
      * Launch the propagation, ie, active propagators if necessary, then reach a fix point
      *

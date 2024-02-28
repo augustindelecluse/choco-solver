@@ -141,7 +141,8 @@ public class XCSP extends RegParser {
     @Override
     public void freesearch(Solver solver) {
         BlackBoxConfigurator bb = BlackBoxConfigurator.init();
-        boolean opt = solver.getObjectiveManager().isOptimization();
+        boolean isOpt = solver.getObjectiveManager().isOptimization();
+        SearchParams.BestSelection opt = isOpt ? SearchParams.BestSelection.BEST : SearchParams.BestSelection.NONE;
         final SearchParams.ValSelConf defaultValSel;
         final SearchParams.VarSelConf defaultVarSel;
         final SearchParams.ResConf defaultResConf;
@@ -160,7 +161,7 @@ public class XCSP extends RegParser {
         } else {
             // variable selection
             defaultValSel = new SearchParams.ValSelConf(
-                    SearchParams.ValueSelection.MIN, opt, 1, opt);
+                    SearchParams.ValueSelection.MIN, opt, 1, isOpt);
             defaultVarSel = new SearchParams.VarSelConf(
                     SearchParams.VariableSelection.DOMWDEG, Integer.MAX_VALUE);
             // restart policy

@@ -502,8 +502,8 @@ public class ObjectiveTest {
                         }
                 )
         ));
-        solver.setRestarts(c -> solver.getFailCount() > c, new LubyCutoff(2), 512);
-        solver.setNoGoodRecordingFromSolutions(ticks);
+        //solver.setRestarts(c -> solver.getFailCount() > c, new LubyCutoff(2), 512);
+        //solver.setNoGoodRecordingFromSolutions(ticks);
         solver.showShortStatistics();
         while (model.getSolver().solve()) {
         }

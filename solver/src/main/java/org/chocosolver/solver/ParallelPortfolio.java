@@ -420,7 +420,7 @@ public class ParallelPortfolio {
     private void configureModel(int workerID) {
         Model worker = getModels().get(workerID);
         ResolutionPolicy policy = worker.getResolutionPolicy();
-        boolean opt = policy != ResolutionPolicy.SATISFACTION;
+        SearchParams.BestSelection opt = policy == ResolutionPolicy.SATISFACTION ? SearchParams.BestSelection.NONE : SearchParams.BestSelection.BEST;
         BlackBoxConfigurator bb = BlackBoxConfigurator.init();
         // common settings
         bb.setRestartPolicy(SearchParams.Restart.GEOMETRIC, 10, 1.05, 50_000, true);

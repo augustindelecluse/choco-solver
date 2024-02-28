@@ -257,7 +257,7 @@ public abstract class RegParser implements IParser {
             varsel = new SearchParams.VarSelConf(varH, flushRate);
         }
         if (valsel == null) {
-            valsel = new SearchParams.ValSelConf(valH, best, bestRate, last);
+            valsel = new SearchParams.ValSelConf(valH, best ? SearchParams.BestSelection.BEST : SearchParams.BestSelection.NONE, bestRate, last);
         }
         createSettings();
         Runtime.getRuntime().addShutdownHook(statOnKill);

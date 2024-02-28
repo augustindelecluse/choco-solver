@@ -92,6 +92,12 @@ public interface SearchParams {
         RAND,
     }
 
+    enum BestSelection {
+        BEST,
+        REVERSEBEST,
+        NONE
+    }
+
     /**
      * A class to configure the restart strategy
      */
@@ -316,7 +322,7 @@ public interface SearchParams {
      */
     class ValSelConf {
         final SearchParams.ValueSelection valsel;
-        final boolean best;
+        final BestSelection best;
         final int bestFreq;
         final boolean last;
 
@@ -329,7 +335,7 @@ public interface SearchParams {
          *                 For example, when set to 12, the best value selection is applied at the first run and then every 12 restarts.
          * @param last     set to <tt>true</tt> to apply the last value selection strategy (or phase saving), <tt>false</tt> otherwise
          */
-        public ValSelConf(SearchParams.ValueSelection valH, boolean best, int bestFreq, boolean last) {
+        public ValSelConf(SearchParams.ValueSelection valH, BestSelection best, int bestFreq, boolean last) {
             this.valsel = valH;
             this.best = best;
             this.bestFreq = bestFreq;
@@ -365,17 +371,24 @@ public interface SearchParams {
                     fn0 = m -> new IntDomainRandom(m.getSeed());
                     break;
             }
-            final Function<Model, IntValueSelector> fn1;
-            if (best) {
-                fn1 = m -> new IntDomainBest(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
-            } else {
-                fn1 = fn0;
+            Function<Model, IntValueSelector> fn1 = null;
+            switch (best) {
+                case BEST:
+                    fn1 = m -> new IntDomainBest(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
+                    break;
+                case REVERSEBEST:
+                    fn1 = m -> new IntDomainReverseBest(fn0.apply(m));
+                    break;
+                case NONE:
+                    fn1 = fn0;
+                    break;
             }
             final Function<Model, IntValueSelector> fn2;
             if (last) {
+                Function<Model, IntValueSelector> finalFn = fn1;
                 fn2 = m -> {
                     m.getSolver().attach(m.getSolver().defaultSolution());
-                    return new IntDomainLast(m.getSolver().defaultSolution(), fn1.apply(m), null);
+                    return new IntDomainLast(m.getSolver().defaultSolution(), finalFn.apply(m), null);
                 };
             } else {
                 fn2 = fn1;
