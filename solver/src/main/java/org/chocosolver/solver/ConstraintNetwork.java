@@ -22,6 +22,9 @@ public class ConstraintNetwork {
     protected Queue<Variable> currentVars = new ArrayDeque<>(); // variables to process at the current iteration
     protected Set<Variable> newVars = new HashSet<>(); // new variables to process for the next iteration
 
+    public Map<IView<?>, Variable> getViewToClosestVariableToObjective() {
+        return viewToClosestVariableToObjective;
+    }
 
     private static class DirectedPropagatorEdge {
         Propagator<?> propagator;

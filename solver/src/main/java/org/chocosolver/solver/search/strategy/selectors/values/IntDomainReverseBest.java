@@ -8,7 +8,9 @@ import org.chocosolver.solver.variables.IntVar;
 
 public class IntDomainReverseBest implements IntValueSelector {
 
-    private final IntValueSelector fallbackValueSelector;
+    protected final IntValueSelector fallbackValueSelector;
+    protected int lb;
+    protected int ub;
 
     public IntDomainReverseBest(IntValueSelector fallBack) {
         this.fallbackValueSelector = fallBack;
@@ -28,6 +30,8 @@ public class IntDomainReverseBest implements IntValueSelector {
             throw new RuntimeException("IntDomainReverseBest should only be used for optimisation problems");
         int delta = 1;
         IntVar objective = (IntVar) model.getObjective();
+        lb = objective.getLB();
+        ub = objective.getUB();
         while (true) {
             model.getEnvironment().worldPush(); // save the state
             try {
@@ -47,7 +51,8 @@ public class IntDomainReverseBest implements IntValueSelector {
                 int best = selectWithPropagate(var);
                 model.getSolver().getEngine().flush();
                 model.getEnvironment().worldPop(); // backtrack
-                //System.exit(1);
+                lb = objective.getLB();
+                ub = objective.getUB();
                 return best;
             } catch (ContradictionException cex) {
                 model.getSolver().getEngine().flush();
