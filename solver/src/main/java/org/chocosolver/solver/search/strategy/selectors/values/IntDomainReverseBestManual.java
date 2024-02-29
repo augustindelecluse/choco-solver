@@ -15,21 +15,27 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.strategy.assignments.DecisionOperatorFactory;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.Variable;
 import org.chocosolver.solver.variables.events.PropagatorEventType;
 import org.chocosolver.solver.variables.view.IView;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class IntDomainReverseBestManual extends IntDomainReverseBest {
 
     public IntDomainReverseBestManual() {
-        super();
+        this(new IntDomainMin(), v -> true);
+    }
+
+    public IntDomainReverseBestManual(IntValueSelector fallBack, Function<IntVar, Boolean> trigger) {
+        super(fallBack, trigger);
     }
 
     public IntDomainReverseBestManual(IntValueSelector fallBack) {
-        super(fallBack);
+        this(fallBack, v -> true);
     }
 
     protected Map<Variable, List<Set<Propagator<?>>>> constraintsOnShortestPath = new HashMap<>();

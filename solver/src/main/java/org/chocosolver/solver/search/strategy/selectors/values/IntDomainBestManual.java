@@ -21,6 +21,7 @@ import org.chocosolver.solver.variables.events.PropagatorEventType;
 import org.chocosolver.solver.variables.view.IView;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class IntDomainBestManual extends IntDomainBestPruning {
 
@@ -29,6 +30,10 @@ public class IntDomainBestManual extends IntDomainBestPruning {
 
     public IntDomainBestManual() {
         super();
+    }
+
+    public IntDomainBestManual(IntValueSelector intValueSelector, Function<IntVar, Boolean> trigger) {
+        super(intValueSelector, trigger);
     }
 
     private void createConstraintGraph(Model model) {

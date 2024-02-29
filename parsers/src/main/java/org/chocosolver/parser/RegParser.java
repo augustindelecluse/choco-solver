@@ -90,12 +90,12 @@ public abstract class RegParser implements IParser {
             depends = {"-f"},
             forbids = {"-varsel"},
             usage = "Define the variable heuristic to use.")
-    public SearchParams.VariableSelection varH = SearchParams.VariableSelection.DOMWDEG_CACD;
+    public SearchParams.VariableSelection varH = SearchParams.VariableSelection.DOMWDEG;
 
     @Option(name = "-flush",
             forbids = {"-varsel"},
-            usage = "Autoflush weights on black-box strategies (default: 32).")
-    protected int flushRate = 32;
+            usage = "Autoflush weights on black-box strategies (default: int max value).")
+    protected int flushRate = Integer.MAX_VALUE;
 
     @Option(name = "-varsel",
             handler = VarSelHandler.class,
@@ -114,13 +114,13 @@ public abstract class RegParser implements IParser {
             depends = {"-f"},
             forbids = {"-valsel"},
             usage = "Tell use BIVS as a meta value selector.")
-    protected boolean best = false;
+    public SearchParams.BestSelection best = SearchParams.BestSelection.None;
 
     @Option(name = "-bestRate",
             depends = {"-f"},
             forbids = {"-valsel"},
             usage = "BIVS rate call.")
-    protected int bestRate = 16;
+    protected int bestRate = 1;
 
 
     @Option(name = "-last",
@@ -196,7 +196,7 @@ public abstract class RegParser implements IParser {
     /**
      * Execution time
      */
-    long time;
+    protected long time;
 
     /**
      * Create a default regular parser
@@ -240,7 +240,7 @@ public abstract class RegParser implements IParser {
     }
 
     @Override
-    public final boolean setUp(String... args) throws SetUpException {
+    public boolean setUp(String... args) throws SetUpException {
         CmdLineParser cmdparser = new CmdLineParser(this);
         try {
             cmdparser.parseArgument(args);
@@ -257,7 +257,7 @@ public abstract class RegParser implements IParser {
             varsel = new SearchParams.VarSelConf(varH, flushRate);
         }
         if (valsel == null) {
-            valsel = new SearchParams.ValSelConf(valH, best ? SearchParams.BestSelection.BEST : SearchParams.BestSelection.NONE, bestRate, last);
+            valsel = new SearchParams.ValSelConf(valH, best, bestRate, last);
         }
         createSettings();
         Runtime.getRuntime().addShutdownHook(statOnKill);

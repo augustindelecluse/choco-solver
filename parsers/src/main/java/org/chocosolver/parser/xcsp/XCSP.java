@@ -11,22 +11,23 @@ package org.chocosolver.parser.xcsp;
 
 import org.chocosolver.parser.Level;
 import org.chocosolver.parser.RegParser;
+import org.chocosolver.parser.SetUpException;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.strategy.BlackBoxConfigurator;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.SearchParams;
-import org.chocosolver.util.logger.Logger;
 import org.kohsuke.args4j.Option;
-import org.xcsp.parser.callbacks.SolutionChecker;
 
-import java.io.ByteArrayInputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Created by cprudhom on 01/09/15.
@@ -36,6 +37,7 @@ public class XCSP extends RegParser {
 
     // Contains mapping with variables and output prints
     public XCSPParser[] parsers;
+    public String[] args;
 
     @SuppressWarnings("FieldMayBeFinal")
     @Option(name = "-cs", usage = "set to true to check solution with org.xcsp.checker.SolutionChecker")
@@ -69,9 +71,9 @@ public class XCSP extends RegParser {
     @Override
     public void createSolver() {
         super.createSolver();
-        if (level.isLoggable(Level.COMPET)) {
-            System.out.println("c Choco 231102");
-        }
+        //if (level.isLoggable(Level.COMPET)) {
+        //    System.out.println("c Choco 231102");
+        //}
         String iname = Paths.get(instance).getFileName().toString();
         parsers = new XCSPParser[nb_cores];
         for (int i = 0; i < nb_cores; i++) {
@@ -142,7 +144,7 @@ public class XCSP extends RegParser {
     public void freesearch(Solver solver) {
         BlackBoxConfigurator bb = BlackBoxConfigurator.init();
         boolean isOpt = solver.getObjectiveManager().isOptimization();
-        SearchParams.BestSelection opt = isOpt ? SearchParams.BestSelection.BEST : SearchParams.BestSelection.NONE;
+        SearchParams.BestSelection opt = isOpt ? SearchParams.BestSelection.Best : SearchParams.BestSelection.None;
         final SearchParams.ValSelConf defaultValSel;
         final SearchParams.VarSelConf defaultVarSel;
         final SearchParams.ResConf defaultResConf;
@@ -155,7 +157,7 @@ public class XCSP extends RegParser {
                     .setExcludeObjective(true)
                     .setExcludeViews(false)
                     .setMetaStrategy(
-                            lc > 0 ? m -> Search.lastConflict(m, 1) :
+                            lc > 0 ? m -> Search.lastConflict(m, lc) :
                                     cos ? Search::conflictOrderingSearch :
                                             m -> m);
         } else {
@@ -174,6 +176,9 @@ public class XCSP extends RegParser {
                     .setExcludeViews(false)
                     .setMetaStrategy(m -> Search.lastConflict(m, 1));
         }
+        valsel = defaultValSel;
+        //System.out.println("for freeSearch " + defaultValSel);
+        //System.out.println("for freeSearch " + defaultVarSel);
         bb.setIntVarStrategy((vars) -> defaultVarSel.make().apply(vars, defaultValSel.make().apply(vars[0].getModel())));
         bb.setRestartPolicy(defaultResConf.make());
 
@@ -222,8 +227,45 @@ public class XCSP extends RegParser {
         finalOutPut(getModel().getSolver());
     }
 
+    private List<SolutionOverTime> solOverTime = new ArrayList<>();
+
+    private class SolutionOverTime {
+
+        private double timeS;
+        private int objective;
+        private long nodes;
+        private long failures;
+        private long restarts;
+
+        public SolutionOverTime(double timeS, int objective, long nodes, long failures, long restarts) {
+            this.timeS = timeS;
+            this.objective = objective;
+            this.nodes = nodes;
+            this.failures = failures;
+            this.restarts = restarts;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(obj:%d;t:%.3f;nodes:%d;fails:%d;restarts:%d)",
+                    objective,
+                    timeS,
+                    nodes,
+                    failures,
+                    restarts);
+        }
+    }
+
 
     private void onSolution(Solver solver, XCSPParser parser) {
+        solOverTime.add(new SolutionOverTime(
+                solver.getTimeCount(),
+                solver.getObjectiveManager().getBestSolutionValue().intValue(),
+                solver.getNodeCount(),
+                solver.getFailCount(),
+                solver.getRestartCount()
+                ));
+        /*
         output.setLength(0);
         output.append(parser.printSolution(!flatten));
         if (solver.getObjectiveManager().isOptimization()) {
@@ -269,10 +311,31 @@ public class XCSP extends RegParser {
                 throw new RuntimeException("wrong solution found twice");
             }
         }
+
+         */
+    }
+
+    @Override
+    public boolean setUp(String... args) throws SetUpException {
+        this.args = args;
+        return super.setUp(args);
+    }
+
+    private String solOverTimeString() {
+        return solOverTime.stream().map(SolutionOverTime::toString).collect(Collectors.joining(""));
     }
 
     private void finalOutPut(Solver solver) {
         boolean complete = !userinterruption && runInTime();//solver.getSearchState() == SearchState.TERMINATED;
+        System.out.printf("%s,%d,%s,%s,%b,%.3f,%s%n",
+                instance,
+                limits.getTime() / 1000,
+                valsel,
+                solOverTimeString(),
+                complete,
+                solver.getTimeCount(),
+                Arrays.toString(args).replace(",", ";"));
+        /*
         Logger log = solver.log().bold();
         if (solver.getSolutionCount() > 0) {
             log = log.green();
@@ -334,5 +397,7 @@ public class XCSP extends RegParser {
                 e.printStackTrace();
             }
         }
+
+         */
     }
 }

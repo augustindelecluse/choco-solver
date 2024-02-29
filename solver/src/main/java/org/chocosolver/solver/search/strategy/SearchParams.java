@@ -93,9 +93,13 @@ public interface SearchParams {
     }
 
     enum BestSelection {
-        BEST,
-        REVERSEBEST,
-        NONE
+        Best,
+        BestSubset,
+        BestManual,
+        ReverseBest,
+        ReverseBestSubset,
+        ReverseBestManual,
+        None
     }
 
     /**
@@ -249,6 +253,14 @@ public interface SearchParams {
         final SearchParams.VariableSelection varsel;
         final int flushRate;
 
+        @Override
+        public String toString() {
+            return "VarSelConf{" +
+                    "varsel=" + varsel +
+                    ", flushRate=" + flushRate +
+                    '}';
+        }
+
         /**
          * Configure the variable selection strategy
          *
@@ -373,13 +385,25 @@ public interface SearchParams {
             }
             Function<Model, IntValueSelector> fn1 = null;
             switch (best) {
-                case BEST:
+                case Best:
                     fn1 = m -> new IntDomainBest(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
-                case REVERSEBEST:
-                    fn1 = m -> new IntDomainReverseBest(fn0.apply(m));
+                case BestManual:
+                    fn1 = m -> new IntDomainBestManual(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
-                case NONE:
+                case BestSubset:
+                    fn1 = m -> new IntDomainBestSubset(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
+                    break;
+                case ReverseBest:
+                    fn1 = m -> new IntDomainReverseBest(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
+                    break;
+                case ReverseBestManual:
+                    fn1 = m -> new IntDomainReverseBestManual(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
+                    break;
+                case ReverseBestSubset:
+                    fn1 = m -> new IntDomainReverseBestSubset(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
+                    break;
+                case None:
                     fn1 = fn0;
                     break;
             }
@@ -403,6 +427,15 @@ public interface SearchParams {
                 return valsel == vsc.valsel && best == vsc.best && bestFreq == vsc.bestFreq && last == vsc.last;
             }
             return false;
+        }
+
+        @Override
+        public String toString() {
+            return "(valsel=" + valsel +
+                    ";best=" + best +
+                    ";bestFreq=" + bestFreq +
+                    ";last=" + last +
+                    ')';
         }
     }
 }

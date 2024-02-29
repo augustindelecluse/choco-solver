@@ -21,17 +21,22 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 public class IntDomainReverseBestSubset extends IntDomainReverseBest {
 
     protected Map<Variable, Set<Propagator<?>>> constraintsOnShortestPath = new HashMap<>();
 
     public IntDomainReverseBestSubset() {
-        super();
+        this(new IntDomainMin(), v -> true);
+    }
+
+    public IntDomainReverseBestSubset(IntValueSelector fallBack, Function<IntVar, Boolean> trigger) {
+        super(fallBack, trigger);
     }
 
     public IntDomainReverseBestSubset(IntValueSelector fallBack) {
-        super(fallBack);
+        this(fallBack, v -> true);
     }
 
     private void createConstraintGraph(Model model) {

@@ -15,24 +15,32 @@ import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.variables.IntVar;
 
+import java.util.function.Function;
+
 public class IntDomainReverseBest implements IntValueSelector {
 
     protected final IntValueSelector fallbackValueSelector;
     protected int lb;
     protected int ub;
+    private final Function<IntVar, Boolean> trigger;
 
-    public IntDomainReverseBest(IntValueSelector fallBack) {
+
+    public IntDomainReverseBest(IntValueSelector fallBack, Function<IntVar, Boolean> trigger) {
         this.fallbackValueSelector = fallBack;
+        this.trigger = trigger;
     }
 
     public IntDomainReverseBest() {
-        this(new IntDomainMin());
+        this(new IntDomainMin(), v -> true);
     }
 
     @Override
     public int selectValue(IntVar var) throws ContradictionException {
         // fixes the objective to its best bound and then
         // selects the min value on the shrunk domain of the variable
+        if (!trigger.apply(var)) {
+            return fallbackValueSelector.selectValue(var);
+        }
         Model model = var.getModel();
         ResolutionPolicy rp = model.getSolver().getObjectiveManager().getPolicy();
         if (rp == ResolutionPolicy.SATISFACTION)

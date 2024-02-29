@@ -36,6 +36,10 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
         super();
     }
 
+    public IntDomainBestSubset(IntValueSelector intValueSelector, Function<IntVar, Boolean> trigger) {
+        super(intValueSelector, trigger);
+    }
+
     private void createConstraintGraph(Model model) {
         ConstraintNetwork constraintGraph = new ConstraintNetwork(model);
         for (Variable var: constraintGraph.variables()) {

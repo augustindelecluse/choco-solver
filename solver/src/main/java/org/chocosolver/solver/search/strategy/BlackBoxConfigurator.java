@@ -159,7 +159,7 @@ public class BlackBoxConfigurator {
         BlackBoxConfigurator bb = init();
         // search strategy
         SearchParams.ValSelConf defaultValSel = new SearchParams.ValSelConf(
-                SearchParams.ValueSelection.MIN, SearchParams.BestSelection.NONE, 16, true);
+                SearchParams.ValueSelection.MIN, SearchParams.BestSelection.None, 16, true);
         SearchParams.VarSelConf defaultVarSel = new SearchParams.VarSelConf(
                 SearchParams.VariableSelection.DOMWDEG_CACD, 32);
         bb.setIntVarStrategy((vars) -> defaultVarSel.make().apply(vars, defaultValSel.make().apply(vars[0].getModel())));
@@ -184,7 +184,8 @@ public class BlackBoxConfigurator {
         BlackBoxConfigurator bb = init();
         // search strategy
         SearchParams.ValSelConf defaultValSel = new SearchParams.ValSelConf(
-                SearchParams.ValueSelection.MIN, SearchParams.BestSelection.BEST, 16, true);
+                SearchParams.ValueSelection.MIN, SearchParams.BestSelection.Best, 16, true);
+        System.out.println("for COP " + defaultValSel);
         SearchParams.VarSelConf defaultVarSel = new SearchParams.VarSelConf(
                 SearchParams.VariableSelection.DOMWDEG, 32);
         bb.setIntVarStrategy((vars) -> defaultVarSel.make().apply(vars, defaultValSel.make().apply(vars[0].getModel())));
