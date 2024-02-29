@@ -1,3 +1,12 @@
+/*
+ * This file is part of choco-solver, http://choco-solver.org/
+ *
+ * Copyright (c) 2024, IMT Atlantique. All rights reserved.
+ *
+ * Licensed under the BSD 4-clause license.
+ *
+ * See LICENSE file in the project root for full license information.
+ */
 package org.chocosolver.solver.search.strategy.selectors.values;
 
 import org.chocosolver.solver.Cause;
@@ -14,6 +23,14 @@ import org.chocosolver.solver.variables.view.IView;
 import java.util.*;
 
 public class IntDomainReverseBestManual extends IntDomainReverseBest {
+
+    public IntDomainReverseBestManual() {
+        super();
+    }
+
+    public IntDomainReverseBestManual(IntValueSelector fallBack) {
+        super(fallBack);
+    }
 
     protected Map<Variable, List<Set<Propagator<?>>>> constraintsOnShortestPath = new HashMap<>();
     private Map<IView<?>, Variable> viewToClosestVariableToObjective;

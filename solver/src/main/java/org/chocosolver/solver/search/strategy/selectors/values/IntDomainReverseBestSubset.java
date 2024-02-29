@@ -1,3 +1,12 @@
+/*
+ * This file is part of choco-solver, http://choco-solver.org/
+ *
+ * Copyright (c) 2024, IMT Atlantique. All rights reserved.
+ *
+ * Licensed under the BSD 4-clause license.
+ *
+ * See LICENSE file in the project root for full license information.
+ */
 package org.chocosolver.solver.search.strategy.selectors.values;
 
 import org.chocosolver.solver.Cause;
@@ -19,6 +28,10 @@ public class IntDomainReverseBestSubset extends IntDomainReverseBest {
 
     public IntDomainReverseBestSubset() {
         super();
+    }
+
+    public IntDomainReverseBestSubset(IntValueSelector fallBack) {
+        super(fallBack);
     }
 
     private void createConstraintGraph(Model model) {
