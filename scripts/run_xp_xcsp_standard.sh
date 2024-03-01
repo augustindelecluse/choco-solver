@@ -8,7 +8,7 @@ currentDate=$(date +%Y-%m-%d_%H-%M-%S);  #
 commitId=$(git rev-parse HEAD)
 outFileOpt="results/xcsp/xcsp-opt-${commitId}-${currentDate}"  # filename of the results (with the date at the end of the file)
 
-declare -a valueSelection=("Best" "ReverseBest")  # each value selection to try
+declare -a valueSelection=("Best" "BestSubset" "BestManual" "ReverseBest" "ReverseBestSubset" "ReverseBestManual" "None")  # each value selection to try
 
 mkdir -p "results/xcsp"  # where the results will be written
 rm -f $outFileOpt  # delete filename of the results if it already existed (does not delete past results, unless their datetime is the same)
@@ -16,9 +16,9 @@ rm -f $outFileOpt  # delete filename of the results if it already existed (does 
 # this is the header of the csv. This header needs to change depending on the solver / type of experiment that is being run
 # all rows need to be printed by the solver itself
 # the column "solutionsOverTime" is in the format (time,objective,nodes,failures,restarts)
-echo "instance,max_runtime,valueSelection,solutionsOverTime,isOptimal,foundOptimalAt,args" >> $outFileOpt
-timeout="00h00m10s"  # timeout in seconds
-iter=1   # number of iterations, for lns only
+echo "instance,maxRuntime,variableSelection,valueSelection,restarts,solutionsOverTime,isOptimal,runtime,nodes,fails,restarts,args" >> $outFileOpt
+timeout="00h30m00s"  # timeout in seconds
+iter=1   # number of iterations to account for randomness
 echo "writing inputs"
 # write all the configs into a temporary file
 inputFile="inputFileValueSel"
@@ -48,7 +48,7 @@ echo "launching experiments in parallel"
 
 # search with
 # - variable selection: DOMWDEG and last conflict
-# - value selection input + phase saving
-cat $inputFile | parallel --colsep ',' $launch_solver -f -varh DOMWDEG -best {2} -last -lc 1 -limit ${timeout} -seed {3} {1} >> $outFileOpt
+# - value selection input
+cat $inputFile | parallel --colsep ',' $launch_solver -f -varh DOMWDEG -lc 1 -best {2} -bestRate 1 -restarts NONE,0,1.0,0,false -limit ${timeout} -seed {3} {1} >> $outFileOpt
 # delete the temporary file
 rm -f $inputFile

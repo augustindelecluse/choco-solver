@@ -176,6 +176,16 @@ public interface SearchParams {
             }
             return false;
         }
+
+        @Override
+        public String toString() {
+            return "(pol=" + pol +
+                    ";cutoff=" + cutoff +
+                    ";offset=" + offset +
+                    ";geo=" + geo +
+                    ";resetOnSolution=" + resetOnSolution +
+                    ')';
+        }
     }
 
     /**
@@ -255,10 +265,9 @@ public interface SearchParams {
 
         @Override
         public String toString() {
-            return "VarSelConf{" +
-                    "varsel=" + varsel +
-                    ", flushRate=" + flushRate +
-                    '}';
+            return "(varsel=" + varsel +
+                    ";flushRate=" + flushRate +
+                    ')';
         }
 
         /**

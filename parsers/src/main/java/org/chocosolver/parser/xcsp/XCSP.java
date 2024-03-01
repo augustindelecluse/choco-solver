@@ -177,6 +177,8 @@ public class XCSP extends RegParser {
                     .setMetaStrategy(m -> Search.lastConflict(m, 1));
         }
         valsel = defaultValSel;
+        varsel = defaultVarSel;
+        restarts = defaultResConf;
         //System.out.println("for freeSearch " + defaultValSel);
         //System.out.println("for freeSearch " + defaultVarSel);
         bb.setIntVarStrategy((vars) -> defaultVarSel.make().apply(vars, defaultValSel.make().apply(vars[0].getModel())));
@@ -327,13 +329,18 @@ public class XCSP extends RegParser {
 
     private void finalOutPut(Solver solver) {
         boolean complete = !userinterruption && runInTime();//solver.getSearchState() == SearchState.TERMINATED;
-        System.out.printf("%s,%d,%s,%s,%b,%.3f,%s%n",
+        System.out.printf("%s,%d,%s,%s,%s,%s,%b,%.3f,%d,%d,%d,%s%n",
                 instance,
                 limits.getTime() / 1000,
+                varsel,
                 valsel,
+                restarts,
                 solOverTimeString(),
                 complete,
                 solver.getTimeCount(),
+                solver.getNodeCount(),
+                solver.getFailCount(),
+                solver.getRestartCount(),
                 Arrays.toString(args).replace(",", ";"));
         /*
         Logger log = solver.log().bold();
