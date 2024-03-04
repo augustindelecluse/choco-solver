@@ -24,7 +24,7 @@ public class ConstraintNetwork {
 
     private Variable objective;
     protected Map<Variable, VariablePath> updateDirections = new HashMap<>();
-    private Map<IView<?>, Variable> viewToClosestVariableToObjective;
+    private Map<IView<?>, Variable> viewToClosestVariableToObjective = new HashMap<>();
 
     protected Set<Variable> processedVariables = new HashSet<>(); // variables already processed
     protected Set<Propagator<?>> processedContraints = new HashSet<>(); // constraints already processed
@@ -104,7 +104,23 @@ public class ConstraintNetwork {
                     }
                 }
             }
-            return (Variable[]) vars.toArray();
+            Variable[] varArray = new Variable[vars.size()];
+            int i = 0;
+            for (Variable v: vars) {
+                if (v == null) {
+                    throw new RuntimeException("invalid");
+                }
+                varArray[i++] = v;
+            }
+            return varArray;
+            /*try {
+                return (Variable[]) vars.toArray();
+            } catch (Exception e) {
+                Object a = vars.toArray();
+                throw e;
+            }
+
+             */
         } else {
             return new Variable[] {variable};
         }

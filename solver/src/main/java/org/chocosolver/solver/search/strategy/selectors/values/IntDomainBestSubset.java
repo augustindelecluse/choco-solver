@@ -18,6 +18,7 @@ import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.strategy.assignments.DecisionOperator;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.Variable;
+import org.chocosolver.solver.variables.view.IView;
 
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -26,6 +27,7 @@ import java.util.function.Function;
 public class IntDomainBestSubset extends IntDomainBestPruning {
 
     protected Map<Variable, Set<Propagator<?>>> constraintsOnShortestPath = new HashMap<>();
+    private Map<IView<?>, Variable> viewToClosestVariableToObjective;
 
     public IntDomainBestSubset(int maxdom, IntValueSelector intValueSelector, Function<IntVar, Boolean> trigger,
                                DecisionOperator<IntVar> dop, BiPredicate<IntVar, Integer> condition, boolean pruning) {
@@ -42,6 +44,7 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
 
     private void createConstraintGraph(Model model) {
         ConstraintNetwork constraintGraph = new ConstraintNetwork(model);
+        viewToClosestVariableToObjective = constraintGraph.getViewToClosestVariableToObjective();
         for (Variable var: constraintGraph.variables()) {
             constraintsOnShortestPath.put(var, new HashSet<>());
             int distToObjective = constraintGraph.hopToObjective(var);
@@ -57,6 +60,10 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
         return !constraintsOnShortestPath.isEmpty();
     }
 
+    private boolean isView(Variable variable) {
+        return (variable.getTypeAndKind() & Variable.VIEW) !=0;
+    }
+
     @Override
     public int selectValue(IntVar var) throws ContradictionException {
         Model model = var.getModel();
@@ -66,7 +73,8 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
         try {
             // save the environment because some propagators will be set as inactive
             model.getEnvironment().worldPush();
-            Set<Propagator<?>> valid = constraintsOnShortestPath.get(var);
+            IntVar originalVar = isView(var) ? (IntVar) viewToClosestVariableToObjective.get((IView<?>) var) : var;
+            Set<Propagator<?>> valid = constraintsOnShortestPath.get(originalVar);
             // removes the propagators that are not on the shortest path between the variable and the objective
             // TODO check for onVariableUpdate? can be changed there to deactivate the variable,
             //  perhaps better than deactivating the propagators

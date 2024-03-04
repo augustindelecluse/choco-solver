@@ -44,8 +44,8 @@ public class IntDomainBestPruning implements IntValueSelector {
 
     private final Function<IntVar, Boolean> trigger;
     private final boolean pruning;
-    protected int[] invalidValuesRemoved;
-    protected int nInvalidValuesRemoved;
+    protected final int[] invalidValuesRemoved;
+    protected int nInvalidValuesRemoved = 0;
 
     /**
      * Create a value selector that returns the best value wrt to the objective to optimize.
@@ -75,6 +75,7 @@ public class IntDomainBestPruning implements IntValueSelector {
         this.fallbackValueSelector = intValueSelector;
         this.trigger = trigger;
         this.pruning = pruning;
+        invalidValuesRemoved = new int[maxdom];
     }
 
     /**

@@ -341,7 +341,7 @@ public class XCSP extends RegParser {
                 solver.getNodeCount(),
                 solver.getFailCount(),
                 solver.getRestartCount(),
-                Arrays.toString(args).replace(",", ";"));
+                Arrays.stream(args).map(s -> s.replace(",", ";")).collect(Collectors.joining(" ")).replace(", ", " "));
         /*
         Logger log = solver.log().bold();
         if (solver.getSolutionCount() > 0) {
