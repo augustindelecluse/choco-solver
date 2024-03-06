@@ -11,7 +11,7 @@ outFileOpt="results/xcsp/xcsp-opt-${commitId}-${currentDate}.csv"  # filename of
 declare -a valueSelection=("Best" "BestSubset" "BestManual" "ReverseBest" "ReverseBestSubset" "ReverseBestManual" "None")  # each value selection to try
 timeout="00h30m00s"  # timeout in seconds
 iter=1   # number of iterations to account for randomness
-nParallel=30  # number of parallel run (should be <= number of threads on the machine, but small enough to fit in memory)
+nParallel=15  # number of parallel run (should be <= number of threads on the machine, but small enough to fit in memory)
 
 mkdir -p "results/xcsp"  # where the results will be written
 rm -f $outFileOpt  # delete filename of the results if it already existed (does not delete past results, unless their datetime is the same)
@@ -39,7 +39,7 @@ echo "launching experiments in parallel"
 # search with
 # - variable selection: DOMWDEG and last conflict
 # - value selection input
-cat $inputFile | parallel -j $nParallel --colsep ',' $launch_solver -f -varh DOMWDEG -lc 1 -best {2} -bestRate 1 -restarts NONE,0,1.0,0,false -limit ${timeout} {1} >> $outFileOpt
+cat $inputFile | parallel -j $nParallel --colsep ',' $launch_solver -f -varh DOMWDEG -last -lc 1 -best {2} -bestRate 1 -restarts NONE,0,1.0,0,false -limit ${timeout} {1} >> $outFileOpt
 # delete the temporary file
 echo "experiments have been run"
 rm -f $inputFile
