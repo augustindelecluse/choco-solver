@@ -100,6 +100,8 @@ public class IntDomainReverseBest implements IntValueSelector {
         // TODO use relaxed fixpoint instead
         // TODO check with calls to variable.swapOnPassivate() to deactivate propagators
         variableToSelect.getModel().getSolver().getEngine().propagate();
+        if (variableToSelect.getDomainSize() == 1)
+            return variableToSelect.getLB();
         return fallbackValueSelector.selectValue(variableToSelect); // pick the value
     }
 

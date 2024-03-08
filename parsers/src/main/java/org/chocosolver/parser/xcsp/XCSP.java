@@ -20,6 +20,8 @@ import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.SearchParams;
 import org.chocosolver.solver.trace.GraphvizGenerator;
 import org.chocosolver.solver.trace.SearchViz;
+import org.chocosolver.solver.variables.Variable;
+import org.chocosolver.solver.variables.view.IView;
 import org.kohsuke.args4j.Option;
 
 import java.io.IOException;
@@ -334,9 +336,18 @@ public class XCSP extends RegParser {
         return solOverTime.stream().map(SolutionOverTime::toString).collect(Collectors.joining(""));
     }
 
+    public static boolean isConcreteVar(Variable var) {
+        return (var.getTypeAndKind() & Variable.VAR) !=0;
+    }
+
     private void finalOutPut(Solver solver) {
         boolean complete = !userinterruption && runInTime();//solver.getSearchState() == SearchState.TERMINATED;
-        System.out.printf("%s,%d,%s,%s,%s,%s,%b,%.3f,%d,%d,%d,%s%n",
+        Runtime runtime = Runtime.getRuntime();
+        double allocatedMemory = ((double) runtime.totalMemory()) / (1024*1024);
+        int nVars = solver.getModel().getNbVars();
+        int nVarsConcrete = Arrays.stream(solver.getModel().getVars()).mapToInt(var -> isConcreteVar(var) ? 1 : 0).sum();
+        int nConstraints = solver.getModel().getNbCstrs();
+        System.out.printf("%s,%d,%s,%s,%s,%s,%b,%.3f,%d,%d,%d,%.2f,%d,%d,%d,%s%n",
                 instance,
                 limits.getTime() / 1000,
                 varsel,
@@ -348,6 +359,10 @@ public class XCSP extends RegParser {
                 solver.getNodeCount(),
                 solver.getFailCount(),
                 solver.getRestartCount(),
+                allocatedMemory,
+                nVars,
+                nVarsConcrete,
+                nConstraints,
                 Arrays.stream(args).map(s -> s.replace(",", ";")).collect(Collectors.joining(" ")).replace(", ", " "));
         /*
         Logger log = solver.log().bold();

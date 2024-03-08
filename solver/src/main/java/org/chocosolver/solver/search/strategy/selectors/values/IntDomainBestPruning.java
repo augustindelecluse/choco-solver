@@ -154,6 +154,8 @@ public class IntDomainBestPruning implements IntValueSelector {
      */
     @Override
     public int selectValue(IntVar var) throws ContradictionException {
+        if (var.getDomainSize() == 1)
+            return var.getLB();
         if (!trigger.apply(var)) {
             return fallbackValueSelector.selectValue(var);
         }

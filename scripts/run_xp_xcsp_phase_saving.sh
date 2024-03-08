@@ -19,7 +19,7 @@ rm -f $outFileOpt  # delete filename of the results if it already existed (does 
 # this is the header of the csv. This header needs to change depending on the solver / type of experiment that is being run
 # all rows need to be printed by the solver itself
 # the column "solutionsOverTime" is in the format (time;objective;nodes;failures;restarts)
-echo "instance,maxRuntime,variableSelection,valueSelection,restarts,solutionsOverTime,isOptimal,runtime,nodes,fails,restarts,args" >> $outFileOpt
+echo "instance,maxRuntime,variableSelection,valueSelection,restarts,solutionsOverTime,isOptimal,runtime,nodes,fails,restarts,memory,vars,varsWithoutView,constraints,args" >> $outFileOpt
 echo "writing inputs"
 # write all the configs into a temporary file
 inputFile="inputFileValueSel"
