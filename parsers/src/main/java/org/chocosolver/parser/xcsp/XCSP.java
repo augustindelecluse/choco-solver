@@ -18,8 +18,11 @@ import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.strategy.BlackBoxConfigurator;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.SearchParams;
+import org.chocosolver.solver.trace.GraphvizGenerator;
+import org.chocosolver.solver.trace.SearchViz;
 import org.kohsuke.args4j.Option;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -200,9 +203,18 @@ public class XCSP extends RegParser {
             getModel().displayPropagatorOccurrences();
         }
         if (enumerate) {
-            while (solver.solve()) {
+            /*while (solver.solve()) {
                 onSolution(solver, parsers[0]);
             }
+
+             */
+            //try (SearchViz vis = new GraphvizGenerator("output.txt", model.getSolver())) {
+                while (model.getSolver().solve()) {
+                    onSolution(solver, parsers[0]);
+                }
+            //} catch (IOException e) {
+            //    throw new RuntimeException(e);
+            //}
         } else {
             if (solver.solve()) {
                 onSolution(solver, parsers[0]);

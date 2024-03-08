@@ -28,12 +28,17 @@ public class ChocoXCSP {
 
     public static void main(String[] args) throws Exception {
         //System.out.println("command is " + Arrays.toString(args));
-        XCSP xscp = new XCSP();
-        if(xscp.setUp(args)) {
-            xscp.createSolver();
-            xscp.buildModel();
-            xscp.configureSearch();
-            xscp.solve();
+        try {
+            XCSP xscp = new XCSP();
+            if (xscp.setUp(args)) {
+                xscp.createSolver();
+                xscp.buildModel();
+                xscp.configureSearch();
+                xscp.solve();
+            }
+        } catch (Exception e) {
+            System.out.println("Error with input \"" + Arrays.toString(args).replace("[", "").replace("]", "").replace(",", "") + "\"");
+            System.exit(1);
         }
     }
 }
