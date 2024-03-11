@@ -26,8 +26,7 @@ import java.util.function.Function;
 
 public class IntDomainReverseBestSubset extends IntDomainReverseBest {
 
-    protected Map<Variable, Set<Propagator<?>>> constraintsOnShortestPath = new HashMap<>();
-    private Map<IView<?>, Variable> viewToClosestVariableToObjective;
+    private SubSetToObjective subSetToObjective = null;
 
     public IntDomainReverseBestSubset() {
         this(new IntDomainMin(), v -> true);
@@ -42,21 +41,11 @@ public class IntDomainReverseBestSubset extends IntDomainReverseBest {
     }
 
     private void createConstraintGraph(Model model) {
-        ConstraintNetwork constraintGraph = new ConstraintNetwork(model);
-        viewToClosestVariableToObjective = constraintGraph.getViewToClosestVariableToObjective();
-        for (Variable var: constraintGraph.variables()) {
-            constraintsOnShortestPath.put(var, new HashSet<>());
-            int distToObjective = constraintGraph.hopToObjective(var);
-            for (int depth = distToObjective - 1 ; depth >= 0  ; depth--) {
-                for (Propagator<?> propagator: constraintGraph.constraintsAtDistanceFromObjective(var, depth)) {
-                    constraintsOnShortestPath.get(var).add(propagator);
-                }
-            }
-        }
+        subSetToObjective = new SubSetToObjective(model);
     }
 
     private boolean isConstraintGraphCreated() {
-        return !constraintsOnShortestPath.isEmpty();
+        return subSetToObjective != null;
     }
 
     private boolean isView(Variable variable) {
@@ -72,14 +61,7 @@ public class IntDomainReverseBestSubset extends IntDomainReverseBest {
         try {
             // save the environment because some propagators will be set as inactive
             model.getEnvironment().worldPush();
-            IntVar originalVar = isView(var) ? (IntVar) viewToClosestVariableToObjective.get((IView<?>) var) : var;
-            Set<Propagator<?>> valid = constraintsOnShortestPath.get(originalVar);
-            // removes the propagators that are not on the shortest path between the variable and the objective
-            for (Propagator<?> propagator: model.getSolver().getEngine().getPropagators()) {
-                if (!valid.contains(propagator) && propagator.isActive()) {
-                    propagator.setPassive();
-                }
-            }
+            subSetToObjective.deactivatePropagatorsOutsideShortestPath(var);
             int value = super.selectValue(var);
             // reactivate the propagators
             model.getEnvironment().worldPop();

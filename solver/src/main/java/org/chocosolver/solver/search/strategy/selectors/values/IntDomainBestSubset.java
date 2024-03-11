@@ -26,8 +26,7 @@ import java.util.function.Function;
 
 public class IntDomainBestSubset extends IntDomainBestPruning {
 
-    protected Map<Variable, Set<Propagator<?>>> constraintsOnShortestPath = new HashMap<>();
-    private Map<IView<?>, Variable> viewToClosestVariableToObjective;
+    private SubSetToObjective subSetToObjective = null;
 
     public IntDomainBestSubset(int maxdom, IntValueSelector intValueSelector, Function<IntVar, Boolean> trigger,
                                DecisionOperator<IntVar> dop, BiPredicate<IntVar, Integer> condition, boolean pruning) {
@@ -43,21 +42,11 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
     }
 
     private void createConstraintGraph(Model model) {
-        ConstraintNetwork constraintGraph = new ConstraintNetwork(model);
-        viewToClosestVariableToObjective = constraintGraph.getViewToClosestVariableToObjective();
-        for (Variable var: constraintGraph.variables()) {
-            constraintsOnShortestPath.put(var, new HashSet<>());
-            int distToObjective = constraintGraph.hopToObjective(var);
-            for (int depth = distToObjective - 1 ; depth >= 0  ; depth--) {
-                for (Propagator<?> propagator: constraintGraph.constraintsAtDistanceFromObjective(var, depth)) {
-                    constraintsOnShortestPath.get(var).add(propagator);
-                }
-            }
-        }
+        subSetToObjective = new SubSetToObjective(model);
     }
 
     private boolean isConstraintGraphCreated() {
-        return !constraintsOnShortestPath.isEmpty();
+        return subSetToObjective != null;
     }
 
     private boolean isView(Variable variable) {
@@ -73,7 +62,7 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
         try {
             // save the environment because some propagators will be set as inactive
             model.getEnvironment().worldPush();
-            IntVar originalVar = isView(var) ? (IntVar) viewToClosestVariableToObjective.get((IView<?>) var) : var;
+            /*IntVar originalVar = isView(var) ? (IntVar) viewToClosestVariableToObjective.get((IView<?>) var) : var;
             Set<Propagator<?>> valid = constraintsOnShortestPath.get(originalVar);
             // removes the propagators that are not on the shortest path between the variable and the objective
             // TODO check for onVariableUpdate? can be changed there to deactivate the variable,
@@ -83,6 +72,8 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
                     propagator.setPassive();
                 }
             }
+             */
+            subSetToObjective.deactivatePropagatorsOutsideShortestPath(var);
             int value = super.selectValue(var);
             // reactivate the propagators
             model.getEnvironment().worldPop();

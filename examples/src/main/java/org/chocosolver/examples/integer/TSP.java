@@ -94,8 +94,8 @@ public class TSP {
                         //new InputOrder<>(model),
                         //new IntDomainBest((v,i) -> lastSol.exists() && lastSol.getIntVal(v) == i),
                         //new IntDomainLast(lastSol, new IntDomainReverseBest(), null),
-                        new IntDomainLast(lastSol, new IntDomainBestSubset(), null),
-                        //new IntDomainLast(lastSol, new IntDomainBest(), null),
+                        //new IntDomainLast(lastSol, new IntDomainBestSubset(), null),
+                        new IntDomainLast(lastSol, new IntDomainBest(), null),
                         succ)
         );
         solver.showShortStatistics();
