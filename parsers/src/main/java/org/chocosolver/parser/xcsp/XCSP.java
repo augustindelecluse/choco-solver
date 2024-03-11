@@ -205,10 +205,11 @@ public class XCSP extends RegParser {
             getModel().displayPropagatorOccurrences();
         }
         if (enumerate) {
+            //model.getSolver().solve();
             //try (SearchViz vis = new GraphvizGenerator("output.txt", model.getSolver())) {
-                while (model.getSolver().solve()) {
-                    onSolution(solver, parsers[0]);
-                }
+            while (model.getSolver().solve()) {
+                onSolution(solver, parsers[0]);
+            }
             //} catch (IOException e) {
             //    throw new RuntimeException(e);
             //}

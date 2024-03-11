@@ -326,7 +326,7 @@ public class Solver implements ISolver, IMeasures, IOutputFactory {
         boolean left = true;
         Thread th = Thread.currentThread();
         while (!stop) {
-            stop = isStopCriterionMet();
+            stop = isStopCriterionMet(); // TODO add criterion to stop on the very first search node explored
             if (stop || th.isInterrupted()) {
                 if (stop) {
                     mMeasures.setSearchState(SearchState.STOPPED);

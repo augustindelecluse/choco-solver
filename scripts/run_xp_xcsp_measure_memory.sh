@@ -3,15 +3,14 @@ echo "compiling"
 mvn clean package -DskipTests -q
 echo "compilation done"
 # path of the executable
-launch_solver=" java -cp .:parsers/target/choco-parsers-4.10.15-SNAPSHOT-jar-with-dependencies.jar org.chocosolver.parser.xcsp.ChocoXCSP"
+launch_solver=" java -cp .:parsers/target/choco-parsers-4.10.15-SNAPSHOT-jar-with-dependencies.jar org.chocosolver.parser.xcsp.XCSPMemoryUsage"
 currentDate=$(date +%Y-%m-%d_%H-%M-%S);  #
 commitId=$(git rev-parse HEAD)
 outFileOpt="results/xcsp/xcsp-opt-${commitId}-${currentDate}.csv"  # filename of the results (with the date at the end of the file)
 
-declare -a valueSelection=("Best" "BestSubset" "BestManual" "ReverseBest" "ReverseBestSubset" "ReverseBestManual" "None")  # each value selection to try
+declare -a valueSelection=("Best" "BestSubset" "ReverseBest" "ReverseBestSubset" "None")  # each value selection to try
 timeout="00h00m01s"  # timeout in seconds, only used to run up to the very first search node
 iter=1   # number of iterations to account for randomness
-nParallel=1  # number of parallel run (should be <= number of threads on the machine, but small enough to fit in memory)
 
 mkdir -p "results/xcsp"  # where the results will be written
 rm -f $outFileOpt  # delete filename of the results if it already existed (does not delete past results, unless their datetime is the same)
@@ -35,11 +34,11 @@ do
 done
 # at this point, the input file contains rows in the format
 # instance_filename,value_selection
-echo "launching experiments in parallel"
+echo "launching experiments in sequentialMode"
 # search with
 # - variable selection: DOMWDEG and last conflict
 # - value selection input
-cat $inputFile | parallel -j $nParallel --colsep ',' $launch_solver -f -varh DOMWDEG -lc 1 -best {2} -bestRate 1 -restarts NONE,0,1.0,0,false -limit ${timeout} {1} >> $outFileOpt
+cat $inputFile | parallel -j 1 --colsep ',' $launch_solver -f -varh DOMWDEG -lc 1 -best {2} -bestRate 1 -restarts NONE,0,1.0,0,false -limit ${timeout} {1} >> $outFileOpt
 # delete the temporary file
 echo "experiments have been run"
 rm -f $inputFile
