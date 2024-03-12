@@ -44,15 +44,17 @@ public class CompactConstraintNetwork {
 
     public static class DirectedPropagatorEdge {
         public Propagator<?> propagator;
-        public Variable target;
+        public Variable goingTowardObjective;
+        public Variable goingAwayFromObjective;
 
-        private DirectedPropagatorEdge(Propagator propagator, Variable target) {
+        private DirectedPropagatorEdge(Propagator<?> propagator, Variable goingTowardObjective, Variable goingAwayFromObjective) {
             this.propagator = propagator;
-            this.target = target;
+            this.goingTowardObjective = goingTowardObjective;
+            this.goingAwayFromObjective = goingAwayFromObjective;
         }
 
         public boolean isActive() {
-            return propagator.isActive() && !target.isInstantiated();
+            return propagator.isActive() && !goingTowardObjective.isInstantiated();
         }
     }
 
@@ -126,7 +128,7 @@ public class CompactConstraintNetwork {
                                         if (!varNodes.containsKey(child)) {
                                             varNodes.put(child, new VarNode(child, distance));
                                         }
-                                        varNodes.get(child).addParent(new DirectedPropagatorEdge(p, parent));
+                                        varNodes.get(child).addParent(new DirectedPropagatorEdge(p, parent, child));
                                     }
                                 }
                             }

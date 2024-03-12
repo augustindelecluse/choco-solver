@@ -93,9 +93,10 @@ public class TSP {
                         new DomOverWDeg<>(succ, 42),
                         //new InputOrder<>(model),
                         //new IntDomainBest((v,i) -> lastSol.exists() && lastSol.getIntVal(v) == i),
-                        //new IntDomainLast(lastSol, new IntDomainReverseBest(), null),
+                        //new IntDomainLast(lastSol, new IntDomainReverseBestSubset(), null),
                         //new IntDomainLast(lastSol, new IntDomainBestSubset(), null),
-                        new IntDomainLast(lastSol, new IntDomainBest(), null),
+                        new IntDomainLast(lastSol, new IntDomainReverseBest(), null), // TODO first solution isn't so good (around 3800)
+                        //new IntDomainBest(),
                         succ)
         );
         solver.showShortStatistics();

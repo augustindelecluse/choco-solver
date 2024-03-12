@@ -23,6 +23,9 @@ public class IntDomainReverseBest implements IntValueSelector {
     protected int lb;
     protected int ub;
     private final Function<IntVar, Boolean> trigger;
+    // TODO increment value of delta after X backtrack without finding a solution
+    //  and reset to 1 if a solution has just been found
+    private int initDelta = 1;
 
 
     public IntDomainReverseBest(IntValueSelector fallBack, Function<IntVar, Boolean> trigger) {
@@ -45,7 +48,7 @@ public class IntDomainReverseBest implements IntValueSelector {
         ResolutionPolicy rp = model.getSolver().getObjectiveManager().getPolicy();
         if (rp == ResolutionPolicy.SATISFACTION)
             throw new RuntimeException("IntDomainReverseBest should only be used for optimisation problems");
-        int delta = 1;
+        int delta = initDelta;
         IntVar objective = (IntVar) model.getObjective();
         lb = objective.getLB();
         ub = objective.getUB();

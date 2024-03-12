@@ -15,8 +15,6 @@ import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.propagation.PropagationEngine;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.Variable;
-import org.chocosolver.solver.variables.events.PropagatorEventType;
-import org.chocosolver.solver.variables.view.IView;
 
 import java.util.*;
 import java.util.function.Function;
@@ -80,7 +78,7 @@ public class IntDomainBestManual extends IntDomainBestPruning {
                                 model.getSolver().getEngine().flush();
                                 throw cex;
                             }
-                            nextVariables.add(edge.target);
+                            nextVariables.add(edge.goingTowardObjective);
                             propagated.add(propagator);
                         }
                     }

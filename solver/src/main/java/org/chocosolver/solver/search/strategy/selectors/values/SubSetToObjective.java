@@ -47,8 +47,8 @@ public class SubSetToObjective {
                     for (CompactConstraintNetwork.DirectedPropagatorEdge edge : parents) {
                         // only consider propagators that are active
                         if (edge.propagator.isActive()) {
-                            if (!edge.target.isInstantiated()) { // TODO must be the parent, not the target
-                                nextVariables.add(edge.target);
+                            if (!edge.goingTowardObjective.isInstantiated()) { // TODO must be the parent, not the target
+                                nextVariables.add(edge.goingTowardObjective);
                             }
                             propagatorsOnShortestPath.add(edge.propagator);
                         }
