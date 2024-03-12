@@ -80,7 +80,8 @@ public class IntStrategy extends AbstractStrategy<IntVar> {
 
     @Override
     public boolean init() {
-        return variableSelector.init();
+		boolean error = valueSelector.init();
+        return error && variableSelector.init();
     }
 
 	@Override

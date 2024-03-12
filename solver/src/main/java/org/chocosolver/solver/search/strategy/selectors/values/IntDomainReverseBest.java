@@ -13,12 +13,15 @@ import org.chocosolver.solver.Cause;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.exception.ContradictionException;
+import org.chocosolver.solver.search.loop.monitors.IMonitorContradiction;
+import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.function.Function;
 
-public class IntDomainReverseBest implements IntValueSelector {
+public class IntDomainReverseBest implements IntValueSelector, IMonitorSolution, IMonitorContradiction {
 
+    protected Model model;
     protected final IntValueSelector fallbackValueSelector;
     protected int lb;
     protected int ub;
@@ -26,15 +29,19 @@ public class IntDomainReverseBest implements IntValueSelector {
     // TODO increment value of delta after X backtrack without finding a solution
     //  and reset to 1 if a solution has just been found
     private int initDelta = 1;
+    private int maxDelta = -1;
+    private int nFailuresWithoutSol = 0;
+    private int failureWithoutSolLimit = 10_000;
 
 
-    public IntDomainReverseBest(IntValueSelector fallBack, Function<IntVar, Boolean> trigger) {
+    public IntDomainReverseBest(Model model, IntValueSelector fallBack, Function<IntVar, Boolean> trigger) {
+        this.model = model;
         this.fallbackValueSelector = fallBack;
         this.trigger = trigger;
     }
 
-    public IntDomainReverseBest() {
-        this(new IntDomainMin(), v -> true);
+    public IntDomainReverseBest(Model model) {
+        this(model, new IntDomainMin(), v -> true);
     }
 
     @Override
@@ -109,4 +116,31 @@ public class IntDomainReverseBest implements IntValueSelector {
     }
 
 
+    @Override
+    public boolean init() {
+        maxDelta = model.getObjective().getDomainSize();
+        if (!model.getSolver().getSearchMonitors().contains(this)) {
+            model.getSolver().plugMonitor(this);
+        }
+        return fallbackValueSelector.init();
+    }
+
+    @Override
+    public void onContradiction(ContradictionException cex) {
+        nFailuresWithoutSol += 1;
+        if (nFailuresWithoutSol % failureWithoutSolLimit == 0) {
+            if (initDelta < maxDelta) {
+                initDelta *= 2;
+                initDelta = Math.min(initDelta, maxDelta);
+                //System.out.println("increased delta to " + initDelta);
+            }
+        }
+    }
+
+    @Override
+    public void onSolution() {
+        nFailuresWithoutSol = 0;
+        initDelta = 1;
+        //System.out.println("reset delta to " + initDelta);
+    }
 }

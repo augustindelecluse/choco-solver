@@ -26,16 +26,16 @@ import java.util.function.Function;
 
 public class IntDomainReverseBestManual extends IntDomainReverseBest {
 
-    public IntDomainReverseBestManual() {
-        this(new IntDomainMin(), v -> true);
+    public IntDomainReverseBestManual(Model model) {
+        this(model, new IntDomainMin(), v -> true);
     }
 
-    public IntDomainReverseBestManual(IntValueSelector fallBack, Function<IntVar, Boolean> trigger) {
-        super(fallBack, trigger);
+    public IntDomainReverseBestManual(Model model, IntValueSelector fallBack, Function<IntVar, Boolean> trigger) {
+        super(model, fallBack, trigger);
     }
 
-    public IntDomainReverseBestManual(IntValueSelector fallBack) {
-        this(fallBack, v -> true);
+    public IntDomainReverseBestManual(Model model, IntValueSelector fallBack) {
+        this(model, fallBack, v -> true);
     }
 
     protected Map<Variable, List<Set<Propagator<?>>>> constraintsOnShortestPath = new HashMap<>();
@@ -77,6 +77,7 @@ public class IntDomainReverseBestManual extends IntDomainReverseBest {
 
     @Override
     protected int selectWithPropagate(IntVar var) throws ContradictionException {
+        // TODO check if constraint is scheduled, and skip otherwise
         IntVar originalVar = isView(var) ? (IntVar) viewToClosestVariableToObjective.get((IView<?>) var) : var;
         Model model = var.getModel();
         int distToObjective = constraintsOnShortestPath.get(originalVar).size();

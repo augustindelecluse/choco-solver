@@ -95,7 +95,7 @@ public class TSP {
                         //new IntDomainBest((v,i) -> lastSol.exists() && lastSol.getIntVal(v) == i),
                         //new IntDomainLast(lastSol, new IntDomainReverseBestSubset(), null),
                         //new IntDomainLast(lastSol, new IntDomainBestSubset(), null),
-                        new IntDomainLast(lastSol, new IntDomainReverseBest(), null), // TODO first solution isn't so good (around 3800)
+                        new IntDomainLast(lastSol, new IntDomainReverseBest(model), null),
                         //new IntDomainBest(),
                         succ)
         );

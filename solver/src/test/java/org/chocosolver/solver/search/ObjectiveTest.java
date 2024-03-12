@@ -484,7 +484,7 @@ public class ObjectiveTest {
         int[] t = new int[2];
 
         solver.setSearch(new IntStrategy(ticks, new DomOverWDeg(ticks, 0L),
-                new IntDomainLast(solution, new IntDomainReverseBest(),
+                new IntDomainLast(solution, new IntDomainReverseBest(model),
                         (x, v) -> {
                             int c = 0;
                             for (int idx = 0; idx < ticks.length; idx++) {

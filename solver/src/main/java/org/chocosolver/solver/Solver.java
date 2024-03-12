@@ -535,7 +535,11 @@ public class Solver implements ISolver, IMeasures, IOutputFactory {
                     action = validate;
                 }
             } catch (ContradictionException cex) {
+                engine.flush();
+                mMeasures.incFailCount();
+                jumpTo = 1;
                 action = repair;
+                searchMonitors.onContradiction(cex);
             }
         }
         searchMonitors.afterOpenNode();

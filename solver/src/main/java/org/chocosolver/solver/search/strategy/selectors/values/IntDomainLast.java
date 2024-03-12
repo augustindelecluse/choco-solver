@@ -76,5 +76,10 @@ public final class IntDomainLast implements IntValueSelector {
                 (var.getLB() == value || var.getUB() == value))
         );
     }
+
+    @Override
+    public boolean init() {
+        return mainSelector.init();
+    }
 }
 

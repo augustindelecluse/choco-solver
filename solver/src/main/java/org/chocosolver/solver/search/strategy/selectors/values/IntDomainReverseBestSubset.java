@@ -28,16 +28,16 @@ public class IntDomainReverseBestSubset extends IntDomainReverseBest {
 
     private SubSetToObjective subSetToObjective = null;
 
-    public IntDomainReverseBestSubset() {
-        this(new IntDomainMin(), v -> true);
+    public IntDomainReverseBestSubset(Model model) {
+        this(model, new IntDomainMin(), v -> true);
     }
 
-    public IntDomainReverseBestSubset(IntValueSelector fallBack, Function<IntVar, Boolean> trigger) {
-        super(fallBack, trigger);
+    public IntDomainReverseBestSubset(Model model, IntValueSelector fallBack, Function<IntVar, Boolean> trigger) {
+        super(model, fallBack, trigger);
     }
 
-    public IntDomainReverseBestSubset(IntValueSelector fallBack) {
-        this(fallBack, v -> true);
+    public IntDomainReverseBestSubset(Model model, IntValueSelector fallBack) {
+        this(model, fallBack, v -> true);
     }
 
     private void createConstraintGraph(Model model) {

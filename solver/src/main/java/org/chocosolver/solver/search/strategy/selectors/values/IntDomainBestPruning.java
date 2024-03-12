@@ -43,7 +43,7 @@ public class IntDomainBestPruning implements IntValueSelector {
     private final IntValueSelector fallbackValueSelector;
 
     private final Function<IntVar, Boolean> trigger;
-    private final boolean pruning;
+    private final boolean pruning;   // TODO pruning activation seems to prevent the triggering of some constraints
     protected final int[] invalidValuesRemoved;
     protected int nInvalidValuesRemoved = 0;
 
@@ -161,11 +161,12 @@ public class IntDomainBestPruning implements IntValueSelector {
         }
         assert var.getModel().getObjective() != null;
         nInvalidValuesRemoved = 0;
+        int bestV;
         if (var.hasEnumeratedDomain() && var.getDomainSize() < maxdom) {
             int bestCost = Integer.MAX_VALUE;
             int ub = var.getUB();
             // if decision is '<=', default value is LB, UB in any other cases
-            int bestV = dop == DecisionOperatorFactory.makeIntReverseSplit() ? ub : var.getLB();
+            bestV = dop == DecisionOperatorFactory.makeIntReverseSplit() ? ub : var.getLB();
             for (int v = var.getLB(); v <= ub; v = var.nextValue(v)) {
                 int bound = bound(var, v, true);
                 if (bound < bestCost || (bound == bestCost && condition.test(var, v))) {
@@ -173,18 +174,25 @@ public class IntDomainBestPruning implements IntValueSelector {
                     bestV = v;
                 }
             }
-            return bestV;
         } else {
             int lbB = bound(var, var.getLB(), false);
             int ubB = bound(var, var.getUB(), false);
             // if values are equivalent
             if (lbB == ubB) {
                 // if decision is '<=', default value is LB, UB in any other cases
-                return dop == DecisionOperatorFactory.makeIntReverseSplit() ? var.getUB() : var.getLB();
+                bestV = dop == DecisionOperatorFactory.makeIntReverseSplit() ? var.getUB() : var.getLB();
             } else {
-                return lbB < ubB ? var.getLB() : var.getUB();
+                bestV = lbB < ubB ? var.getLB() : var.getUB();
             }
         }
+        if (pruning && nInvalidValuesRemoved > 0) {
+            for (int i = 0 ; i < nInvalidValuesRemoved ; i++) {
+                int val = invalidValuesRemoved[i];
+                dop.unapply(var, val, Cause.Null);
+            }
+            var.getModel().getSolver().getEngine().propagate();
+        }
+        return bestV;
     }
 
     protected int bound(IntVar var, int val, boolean removeIfInvalid) throws ContradictionException {
@@ -207,7 +215,7 @@ public class IntDomainBestPruning implements IntValueSelector {
         model.getEnvironment().worldPop();
         if (pruning && !valid && removeIfInvalid) {
             // removes the value if the operation failed
-            dop.unapply(var, val, Cause.Null);
+            //dop.unapply(var, val, Cause.Null);
             invalidValuesRemoved[nInvalidValuesRemoved++] = val;
         }
         return cost;

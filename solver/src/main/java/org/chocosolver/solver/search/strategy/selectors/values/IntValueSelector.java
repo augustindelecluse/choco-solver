@@ -25,6 +25,22 @@ import org.chocosolver.solver.variables.IntVar;
 public interface IntValueSelector  {
 
     /**
+     * Prepare <code>this</code> to be used in a search loop
+     * The initialization can detect inconsistency, in that case, it returns false
+     */
+    default boolean init() {
+        return true;
+    }
+
+    /**
+     * Remove the current strategy.
+     * This implies unplugging variable or search monitors.
+     */
+    default void remove() {
+
+    }
+
+    /**
      * Selects and returns the value to constrained chosen variable with.
      * The chosen value must belong to the domain of <code>variable</code>.
      *

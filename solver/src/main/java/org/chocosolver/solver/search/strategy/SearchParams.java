@@ -404,13 +404,13 @@ public interface SearchParams {
                     fn1 = m -> new IntDomainBestSubset(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
                 case ReverseBest:
-                    fn1 = m -> new IntDomainReverseBest(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
+                    fn1 = m -> new IntDomainReverseBest(m, fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
                 case ReverseBestManual:
-                    fn1 = m -> new IntDomainReverseBestManual(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
+                    fn1 = m -> new IntDomainReverseBestManual(m, fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
                 case ReverseBestSubset:
-                    fn1 = m -> new IntDomainReverseBestSubset(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
+                    fn1 = m -> new IntDomainReverseBestSubset(m, fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
                 case None:
                     fn1 = fn0;
