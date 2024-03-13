@@ -93,6 +93,7 @@ public class IntDomainReverseBest implements IntValueSelector, IMonitorSolution,
                 } else {
                     objective.updateUpperBound(boundWithDelta(objective, rp, delta) - 1, Cause.Null);
                 }
+                //model.getSolver().getEngine().propagate();
                 delta *= 2;
             }
         }
@@ -119,9 +120,9 @@ public class IntDomainReverseBest implements IntValueSelector, IMonitorSolution,
     @Override
     public boolean init() {
         maxDelta = model.getObjective().getDomainSize();
-        if (!model.getSolver().getSearchMonitors().contains(this)) {
-            model.getSolver().plugMonitor(this);
-        }
+        //if (!model.getSolver().getSearchMonitors().contains(this)) {
+        //    model.getSolver().plugMonitor(this);
+        //}
         return fallbackValueSelector.init();
     }
 

@@ -10,6 +10,7 @@
 package org.chocosolver.parser.xcsp;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Created by cprudhom on 01/09/15.
@@ -37,7 +38,8 @@ public class ChocoXCSP {
                 xscp.solve();
             }
         } catch (Exception e) {
-            System.out.println("Error with input \"" + Arrays.toString(args).replace("[", "").replace("]", "").replace(",", "") + "\"");
+            String input = Arrays.stream(args).map(s -> s.replace(",", ";")).collect(Collectors.joining(" ")).replace(", ", " ");
+            System.out.println("Error with input " + input);
             System.exit(1);
         }
     }
