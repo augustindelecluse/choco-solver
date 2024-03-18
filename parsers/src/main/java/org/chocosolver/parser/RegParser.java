@@ -76,7 +76,7 @@ public abstract class RegParser implements IParser {
     @Option(name = "-limit",
             handler = LimitHandler.class,
             usage = "Resolution limits [XXhYYmZZs,Nruns,Msols] where each is optional (no space allowed).")
-    protected SearchParams.LimConf limits = new SearchParams.LimConf(-1, -1, -1);
+    public SearchParams.LimConf limits = new SearchParams.LimConf(-1, -1, -1);
 
     @Option(name = "-csv", aliases = {
             "--print-csv"}, usage = "Print statistics on exit (default: false).")

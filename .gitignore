@@ -1,5 +1,8 @@
 #### joe made this: http://goel.io/joe
 
+# data too large for being stored on the repository
+data/tsp/uncompressed/
+
 #####=== Java ===#####
 
 *.class

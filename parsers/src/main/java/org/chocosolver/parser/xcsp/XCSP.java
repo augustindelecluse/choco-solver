@@ -241,7 +241,7 @@ public class XCSP extends RegParser {
 
     private List<SolutionOverTime> solOverTime = new ArrayList<>();
 
-    private class SolutionOverTime {
+    public static class SolutionOverTime {
 
         private double timeS;
         private int objective;

@@ -29,5 +29,6 @@ module org.chocosolver.parsers {
     opens org.chocosolver.parser.xcsp to args4j;
     opens org.chocosolver.parser.dimacs to args4j;
     exports org.chocosolver.parser.handlers;
+    exports org.chocosolver.parser.xcsp;
     opens org.chocosolver.parser.handlers to args4j, org.testng;
 }
