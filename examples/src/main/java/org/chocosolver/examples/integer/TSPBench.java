@@ -185,7 +185,7 @@ public class TSPBench extends BenchParser {
         return setup;
     }
 
-    // -valsel GREEDY,Best,1,true
+    // -valsel GREEDY,None,1,true
     public static void main(String[] args) {
         try {
             TSPBench bench = new TSPBench();
