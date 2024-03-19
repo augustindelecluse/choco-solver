@@ -90,6 +90,7 @@ public interface SearchParams {
         MIDFLOOR,
         MIDCEIL,
         RAND,
+        GREEDY
     }
 
     enum BestSelection {
@@ -346,6 +347,7 @@ public interface SearchParams {
         final BestSelection best;
         final int bestFreq;
         final boolean last;
+        Function<Model, IntValueSelector> greedy = null;
 
         /**
          * Configure the value selection strategy
@@ -391,6 +393,9 @@ public interface SearchParams {
                 case RAND:
                     fn0 = m -> new IntDomainRandom(m.getSeed());
                     break;
+                case GREEDY:
+                    fn0 = greedy;
+                    break;
             }
             Function<Model, IntValueSelector> fn1 = null;
             switch (best) {
@@ -427,6 +432,10 @@ public interface SearchParams {
                 fn2 = fn1;
             }
             return fn2;
+        }
+
+        public void setGreedy(Function<Model, IntValueSelector> greedy) {
+            this.greedy = greedy;
         }
 
         @Override

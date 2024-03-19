@@ -1,15 +1,18 @@
 package org.chocosolver.examples.integer;
 
 import org.chocosolver.parser.RegParser;
+import org.chocosolver.parser.SetUpException;
 import org.chocosolver.parser.xcsp.XCSP;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.extension.Tuples;
+import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.SearchParams;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainLast;
 import org.chocosolver.solver.search.strategy.selectors.values.IntDomainReverseBest;
+import org.chocosolver.solver.search.strategy.selectors.values.IntValueSelector;
 import org.chocosolver.solver.search.strategy.selectors.variables.DomOverWDeg;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.variables.IntVar;
@@ -23,11 +26,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TSPBench extends BenchParser {
 
     public IntVar[] succ;
+    public Map<IntVar, Integer> indices;
+    public TSPInstance tspInstance;
 
     public class TSPInstance {
 
@@ -97,13 +104,12 @@ public class TSPBench extends BenchParser {
 
     @Override
     public Model makeModel() {
-        TSPInstance instance = new TSPInstance(this.instance);
-        int C = instance.C;
-        int[][] D = instance.D;
-
+        int C = tspInstance.C;
+        int[][] D = tspInstance.D;
         // A new model instance
         Model model = new Model("TSP");
         int max = 999;
+        indices = new HashMap<>();
         // VARIABLES
         // For each city, the next one visited in the route
         succ = model.intVarArray("succ", C, 0, C - 1);
@@ -127,6 +133,7 @@ public class TSPBench extends BenchParser {
             // The Table constraint ensures that one combination holds
             // in a solution
             model.table(succ[i], dist[i], tuples).post();
+            indices.put(succ[i], i);
         }
         // The route forms a single circuit of size C, visiting all cities
         model.subCircuit(succ, 0, model.intVar(C)).post();
@@ -146,6 +153,39 @@ public class TSPBench extends BenchParser {
         super();
     }
 
+    @Override
+    public IntValueSelector makeGreedy() {
+        return new Greedy();
+    }
+    
+    private class Greedy implements IntValueSelector {
+
+        @Override
+        public int selectValue(IntVar var) throws ContradictionException {
+            int index = indices.get(var);
+            // look for the closest successor
+            int closest = var.getLB();
+            int smallestDist = Integer.MAX_VALUE;
+            int ub = var.getUB();
+            for (int v = var.getLB(); v <= ub; v = var.nextValue(v)) {
+                int dist = tspInstance.D[index][v];
+                if (dist < smallestDist) {
+                    closest = v;
+                    smallestDist = dist;
+                }
+            }
+            return closest;
+        }
+    }
+
+    @Override
+    public boolean setUp(String... args) throws SetUpException {
+        boolean setup = super.setUp(args);
+        this.tspInstance = new TSPInstance(this.instance);
+        return setup;
+    }
+
+    // -valsel GREEDY,Best,1,true
     public static void main(String[] args) {
         try {
             TSPBench bench = new TSPBench();
@@ -158,6 +198,7 @@ public class TSPBench extends BenchParser {
         } catch (Exception e) {
             String input = Arrays.stream(args).map(s -> s.replace(",", ";")).collect(Collectors.joining(" ")).replace(", ", " ");
             System.out.println("Error with input " + input);
+            e.printStackTrace();
             System.exit(1);
         }
     }

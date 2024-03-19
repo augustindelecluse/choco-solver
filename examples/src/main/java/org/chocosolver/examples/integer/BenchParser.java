@@ -9,6 +9,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.ParallelPortfolio;
 import org.chocosolver.solver.ResolutionPolicy;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.search.strategy.selectors.values.IntValueSelector;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.variables.IntVar;
 
@@ -28,6 +29,12 @@ public abstract class BenchParser extends RegParser {
     protected BenchParser() {
         super("Bench");
     }
+
+    /**
+     * Creates a greedy search for a specific problem (white-box / problem-dependent selector)
+     * @return
+     */
+    public abstract IntValueSelector makeGreedy();
 
     @Override
     public Thread actionOnKill() {
@@ -121,6 +128,7 @@ public abstract class BenchParser extends RegParser {
     public void makeSearch(IntVar[] decisionVars) {
         Model model = getModel();
         Solver solver = model.getSolver();
+        valsel.setGreedy(m -> makeGreedy());
         AbstractStrategy<IntVar> search = varsel.make().apply(decisionVars, valsel.make().apply(model));
         solver.addRestarter(restarts.make().apply(solver));
         solver.setSearch(search);
