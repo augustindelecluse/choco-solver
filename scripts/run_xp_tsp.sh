@@ -26,7 +26,7 @@ rm -f $outFileOpt  # delete filename of the results if it already existed (does 
 echo "instance,maxRuntime,variableSelection,valueSelection,restarts,solutionsOverTime,isOptimal,runtime,nodes,fails,restarts,memory,vars,varsWithoutView,constraints,args" >> $outFileOpt
 echo "writing inputs"
 # write all the configs into a temporary file
-inputFile="inputFileValueSel"
+inputFile="inputFileTSP"
 rm -f $inputFile  # delete previous temporary file if it existed
 for (( i=1; i<=$iter; i++ ))  # for each iteration
 do
@@ -34,7 +34,7 @@ do
   do
     # extracts the instances from the data folder
     # write one line per instance containing its filename, along with the relaxation to perform
-    find data/tsp/uncompressed -type f | sed "s/$/|${val}/"  >> $inputFile
+    find data/tsp/uncompressed -type f | sed "s/$/-${val}/"  >> $inputFile
   done
 done
 # at this point, the input file contains rows in the format
@@ -43,7 +43,8 @@ echo "launching experiments in parallel"
 # search with
 # - variable selection: DOMWDEG and last conflict
 # - value selection input
-cat $inputFile | parallel -j $nParallel --colsep '|' $launch_solver -f -varh DOMWDEG -lc 1 -valsel {2} -restarts NONE,0,1.0,0,false -limit ${timeout} {1} >> $outFileOpt
+cat $inputFile | parallel -j $nParallel --colsep '-' $launch_solver -f -varh DOMWDEG -lc 1 -valsel {2} -restarts NONE,0,1.0,0,false -limit ${timeout} {1} >> $outFileOpt
 # delete the temporary file
 echo "experiments have been run"
 rm -f $inputFile
+
