@@ -31,7 +31,7 @@ do
   do
     # extracts the instances from the data folder
     # write one line per instance containing its filename, along with the relaxation to perform
-    find data/xcsp/cop23/ -type f | sed "s/$/,${val}/"  >> $inputFile
+    find data/tsp/uncompressed -type f | sed "s/$/,${val}/"  >> $inputFile
   done
 done
 # at this point, the input file contains rows in the format
