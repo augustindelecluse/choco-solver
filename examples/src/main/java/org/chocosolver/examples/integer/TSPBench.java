@@ -117,7 +117,7 @@ public class TSPBench extends BenchParser {
         int[][] D = tspInstance.D;
         // A new model instance
         Model model = new Model("TSP");
-        int max = 999;
+        int max = tspInstance.max;
         indices = new HashMap<>();
         // VARIABLES
         // For each city, the next one visited in the route
