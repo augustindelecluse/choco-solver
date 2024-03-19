@@ -162,6 +162,12 @@ public class IntDomainBestPruning implements IntValueSelector {
         assert var.getModel().getObjective() != null;
         nInvalidValuesRemoved = 0;
         int bestV;
+
+        if (var.getModel().getResolutionPolicy() != ResolutionPolicy.SATISFACTION) {
+            if ((var.getModel().getObjective()).getDomainSize() == 1) {
+                return var.getLB(); // the domain of the variable will have no impact on the objective
+            }
+        }
         if (var.hasEnumeratedDomain() && var.getDomainSize() < maxdom) {
             int bestCost = Integer.MAX_VALUE;
             int ub = var.getUB();

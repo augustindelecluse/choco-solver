@@ -73,8 +73,14 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
                 }
             }
              */
-            subSetToObjective.deactivatePropagatorsOutsideShortestPath(var);
-            int value = super.selectValue(var);
+            boolean objectiveReached = subSetToObjective.deactivatePropagatorsOutsideShortestPath(var);
+            int value;
+            if (objectiveReached) {
+                value = super.selectValue(var);
+            } else {
+                nInvalidValuesRemoved = 0;
+                value = var.getLB(); // the objective will not change by modifying this variable
+            }
             // reactivate the propagators
             model.getEnvironment().worldPop();
             // removes the values that were detected as invalid

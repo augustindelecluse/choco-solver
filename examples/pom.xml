@@ -62,7 +62,7 @@
             </goals>
             <configuration>
               <descriptorRefs>
-                src
+                jar-with-dependencies
               </descriptorRefs>
             </configuration>
           </execution>
