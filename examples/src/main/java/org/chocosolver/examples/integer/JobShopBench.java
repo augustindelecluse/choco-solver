@@ -51,10 +51,11 @@ public class JobShopBench extends BenchParser {
             try {
                 FileInputStream istream = new FileInputStream(file);
                 BufferedReader in = new BufferedReader(new InputStreamReader(istream));
-                in.readLine();
-                in.readLine();
-                in.readLine();
-                StringTokenizer tokenizer = new StringTokenizer(in.readLine());
+                String line = in.readLine();
+                while (line.charAt(0) == '#') {
+                    line = in.readLine();
+                }
+                StringTokenizer tokenizer = new StringTokenizer(line);
                 nJobs = Integer.parseInt(tokenizer.nextToken());
                 nMachines = Integer.parseInt(tokenizer.nextToken());
 

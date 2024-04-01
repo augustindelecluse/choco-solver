@@ -29,7 +29,7 @@ do
   do
     # extracts the instances from the data folder
     # write one line per instance containing its filename, along with the relaxation to perform
-    find data/jobshop -type f | sed "s/$/:${val}/"  >> $inputFile
+    find data/jobshop/ValladaRuizFraminan2015 -type f | sed "s/$/:${val}/"  >> $inputFile
   done
 done
 # at this point, the input file contains rows in the format
