@@ -25,6 +25,8 @@ import org.chocosolver.solver.variables.IntVar;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.chocosolver.parser.xcsp.XCSP.isConcreteVar;
@@ -137,7 +139,8 @@ public abstract class BenchParser extends RegParser {
     public void makeSearch(IntVar[] decisionVars) {
         Model model = getModel();
         Solver solver = model.getSolver();
-        valsel.setGreedy(m -> makeGreedy());
+        Function<Model, IntValueSelector> greedyFun = m -> makeGreedy();
+        valsel.setGreedy(greedyFun);
         AbstractStrategy<IntVar> search = varsel.make().apply(decisionVars, valsel.make().apply(model));
         solver.addRestarter(restarts.make().apply(solver));
         solver.setSearch(search);
@@ -182,5 +185,22 @@ public abstract class BenchParser extends RegParser {
                 nVarsConcrete,
                 nConstraints,
                 Arrays.stream(args).map(s -> s.replace(",", ";")).collect(Collectors.joining(" ")).replace(", ", " "));
+    }
+
+    public static void mainFrom(String[] args, Supplier<BenchParser> benchParserSupplier) {
+        try {
+            BenchParser bench = benchParserSupplier.get();
+            if (bench.setUp(args)) {
+                bench.createSolver();
+                bench.buildModel();
+                bench.configureSearch();
+                bench.singleThread();
+            }
+        } catch (Exception e) {
+            String input = Arrays.stream(args).map(s -> s.replace(",", ";")).collect(Collectors.joining(" ")).replace(", ", " ");
+            System.out.println("Error with input " + input);
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 }

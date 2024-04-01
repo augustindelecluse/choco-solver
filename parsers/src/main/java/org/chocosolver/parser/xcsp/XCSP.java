@@ -18,13 +18,9 @@ import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.strategy.BlackBoxConfigurator;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.SearchParams;
-import org.chocosolver.solver.trace.GraphvizGenerator;
-import org.chocosolver.solver.trace.SearchViz;
 import org.chocosolver.solver.variables.Variable;
-import org.chocosolver.solver.variables.view.IView;
 import org.kohsuke.args4j.Option;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -149,7 +145,7 @@ public class XCSP extends RegParser {
     public void freesearch(Solver solver) {
         BlackBoxConfigurator bb = BlackBoxConfigurator.init();
         boolean isOpt = solver.getObjectiveManager().isOptimization();
-        SearchParams.BestSelection opt = isOpt ? SearchParams.BestSelection.Best : SearchParams.BestSelection.None;
+        SearchParams.BestSelection opt = isOpt ? SearchParams.BestSelection.BEST : SearchParams.BestSelection.NONE;
         final SearchParams.ValSelConf defaultValSel;
         final SearchParams.VarSelConf defaultVarSel;
         final SearchParams.ResConf defaultResConf;

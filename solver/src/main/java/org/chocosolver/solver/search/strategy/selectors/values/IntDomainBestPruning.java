@@ -43,7 +43,7 @@ public class IntDomainBestPruning implements IntValueSelector {
     private final IntValueSelector fallbackValueSelector;
 
     private final Function<IntVar, Boolean> trigger;
-    private final boolean pruning;   // TODO pruning activation seems to prevent the triggering of some constraints
+    protected boolean pruning;   // TODO pruning activation seems to prevent the triggering of some constraints
     protected final int[] invalidValuesRemoved;
     protected int nInvalidValuesRemoved = 0;
 

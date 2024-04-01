@@ -196,20 +196,7 @@ public class TSPBench extends BenchParser {
 
     // -valsel GREEDY,None,1,true
     public static void main(String[] args) {
-        try {
-            TSPBench bench = new TSPBench();
-            if (bench.setUp(args)) {
-                bench.createSolver();
-                bench.buildModel();
-                bench.configureSearch();
-                bench.singleThread();
-            }
-        } catch (Exception e) {
-            String input = Arrays.stream(args).map(s -> s.replace(",", ";")).collect(Collectors.joining(" ")).replace(", ", " ");
-            System.out.println("Error with input " + input);
-            e.printStackTrace();
-            System.exit(1);
-        }
+        mainFrom(args, TSPBench::new);
     }
 
 }

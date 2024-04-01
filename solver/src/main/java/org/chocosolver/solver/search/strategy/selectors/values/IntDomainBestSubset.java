@@ -55,6 +55,7 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
 
     @Override
     public int selectValue(IntVar var) throws ContradictionException {
+        pruning = false;
         Model model = var.getModel();
         if (!isConstraintGraphCreated()) {
             createConstraintGraph(model);
@@ -74,6 +75,10 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
             }
              */
             boolean objectiveReached = subSetToObjective.deactivatePropagatorsOutsideShortestPath(var);
+            // TODO objective is not always fixed when ending the search here, inspect why -> pruning
+
+            // TODO make only one worldpush and worlpop, have better calls to super methods
+            //System.out.println("deactivated");
             int value;
             if (objectiveReached) {
                 value = super.selectValue(var);
@@ -83,6 +88,8 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
             }
             // reactivate the propagators
             model.getEnvironment().worldPop();
+            //System.out.println("reactivated");
+
             // removes the values that were detected as invalid
             for (int idx = 0 ; idx < nInvalidValuesRemoved ; idx++) {
                 int val = invalidValuesRemoved[idx];
@@ -92,6 +99,7 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
         } catch (ContradictionException cex) {
             // reactivate the propagators
             model.getEnvironment().worldPop();
+            //System.out.println("reactivated");
             throw cex;
         }
     }

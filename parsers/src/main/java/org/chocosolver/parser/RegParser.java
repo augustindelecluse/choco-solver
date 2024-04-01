@@ -114,7 +114,7 @@ public abstract class RegParser implements IParser {
             depends = {"-f"},
             forbids = {"-valsel"},
             usage = "Tell use BIVS as a meta value selector.")
-    public SearchParams.BestSelection best = SearchParams.BestSelection.None;
+    public SearchParams.BestSelection best = SearchParams.BestSelection.NONE;
 
     @Option(name = "-bestRate",
             depends = {"-f"},

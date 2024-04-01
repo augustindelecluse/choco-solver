@@ -94,13 +94,13 @@ public interface SearchParams {
     }
 
     enum BestSelection {
-        Best,
-        BestSubset,
-        BestManual,
-        ReverseBest,
-        ReverseBestSubset,
-        ReverseBestManual,
-        None
+        BEST,
+        BESTSUBSET,
+        BESTMANUAL,
+        REVERSEBEST,
+        REVERSEBESTSUBSET,
+        REVERSEBESTMANUAL,
+        NONE
     }
 
     /**
@@ -399,25 +399,25 @@ public interface SearchParams {
             }
             Function<Model, IntValueSelector> fn1 = null;
             switch (best) {
-                case Best:
+                case BEST:
                     fn1 = m -> new IntDomainBest(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
-                case BestManual:
+                case BESTMANUAL:
                     fn1 = m -> new IntDomainBestManual(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
-                case BestSubset:
+                case BESTSUBSET:
                     fn1 = m -> new IntDomainBestSubset(fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
-                case ReverseBest:
+                case REVERSEBEST:
                     fn1 = m -> new IntDomainReverseBest(m, fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
-                case ReverseBestManual:
+                case REVERSEBESTMANUAL:
                     fn1 = m -> new IntDomainReverseBestManual(m, fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
-                case ReverseBestSubset:
+                case REVERSEBESTSUBSET:
                     fn1 = m -> new IntDomainReverseBestSubset(m, fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0);
                     break;
-                case None:
+                case NONE:
                     fn1 = fn0;
                     break;
             }

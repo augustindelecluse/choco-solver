@@ -180,7 +180,7 @@ public class RegParserTest {
         p.parseArgument("/file");
         Assert.assertNull(parser.valsel);
         p.parseArgument("-f", "-valsel", "[MAX,true,32,true]", "/file");
-        Assert.assertEquals(parser.valsel, new SearchParams.ValSelConf(SearchParams.ValueSelection.MAX, SearchParams.BestSelection.Best, 32, true));
+        Assert.assertEquals(parser.valsel, new SearchParams.ValSelConf(SearchParams.ValueSelection.MAX, SearchParams.BestSelection.BEST, 32, true));
     }
 
     @Test(groups = "1s")
@@ -191,7 +191,7 @@ public class RegParserTest {
         p.parseArgument("-f", "-valsel", "[MIN,true,32,true]", "-varh", "DOMWDEG", "-lc", "2",
                 "-restarts", "[luby,500,0,50000]",
                 "/file");
-        Assert.assertEquals(parser.valsel, new SearchParams.ValSelConf(SearchParams.ValueSelection.MIN, SearchParams.BestSelection.Best, 32, true));
+        Assert.assertEquals(parser.valsel, new SearchParams.ValSelConf(SearchParams.ValueSelection.MIN, SearchParams.BestSelection.BEST, 32, true));
     }
 
     @Test(groups = "1s")

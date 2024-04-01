@@ -9,7 +9,6 @@
  */
 package org.chocosolver.examples.integer;
 
-import org.chocosolver.solver.ConstraintNetwork;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
@@ -17,7 +16,6 @@ import org.chocosolver.solver.constraints.extension.Tuples;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.search.strategy.selectors.values.*;
 import org.chocosolver.solver.search.strategy.selectors.variables.DomOverWDeg;
-import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
 import org.chocosolver.solver.variables.IntVar;
 
 /**
@@ -87,16 +85,10 @@ public class TSP {
         model.setObjective(Model.MINIMIZE, totDist);
         Solver solver = model.getSolver();
         Solution lastSol = solver.defaultSolution();
-        //ConstraintNetwork constraintNetwork = new ConstraintNetwork(model);
         solver.setSearch(
                 Search.intVarSearch(
                         new DomOverWDeg<>(succ, 42),
-                        //new InputOrder<>(model),
-                        //new IntDomainBest((v,i) -> lastSol.exists() && lastSol.getIntVal(v) == i),
-                        //new IntDomainLast(lastSol, new IntDomainReverseBestSubset(), null),
-                        //new IntDomainLast(lastSol, new IntDomainBestSubset(), null),
                         new IntDomainLast(lastSol, new IntDomainReverseBest(model), null),
-                        //new IntDomainBest(),
                         succ)
         );
         solver.showShortStatistics();
