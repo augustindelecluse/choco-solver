@@ -58,21 +58,33 @@ public class IntDomainReverseBestSubset extends IntDomainReverseBest {
         if (!isConstraintGraphCreated()) {
             createConstraintGraph(model);
         }
+        // save the environment because some propagators will be set as inactive
+        model.getEnvironment().worldPush();
+        boolean canReachVariable = subSetToObjective.deactivatePropagatorsOutsideShortestPath(var);
+        int value;
         try {
-            // save the environment because some propagators will be set as inactive
-            model.getEnvironment().worldPush();
-            subSetToObjective.deactivatePropagatorsOutsideShortestPath(var);
-            int value = super.selectValue(var);
-            // reactivate the propagators
-            model.getEnvironment().worldPop();
-            // use the lower and upper bounds that were computed
-            ((IntVar) model.getObjective()).updateLowerBound(lb, Cause.Null);
-            ((IntVar) model.getObjective()).updateUpperBound(ub, Cause.Null);
-            return value;
+            // select the best value
+            if (canReachVariable)
+                value = super.selectValue(var);
+            else
+                value = var.getLB();
         } catch (ContradictionException cex) {
-            // reactivate the propagators
+            // reactivate the propagators and give the error
             model.getEnvironment().worldPop();
             throw cex;
         }
+        // remember the bounds deduced by the super class
+        int lb = ((IntVar) model.getObjective()).getLB();
+        int ub = ((IntVar) model.getObjective()).getUB();
+        // reactivate the propagators
+        model.getEnvironment().worldPop();
+        // put back the bounds deduced by the super class
+        ((IntVar) model.getObjective()).updateLowerBound(lb, Cause.Null);
+        ((IntVar) model.getObjective()).updateUpperBound(ub, Cause.Null);
+        if (model.getObjective().getDomainSize() <= 2) {
+            // this prevents the search space exploration to not be notified of a change in the domain of the objective variable
+            model.getSolver().getEngine().propagate();
+        }
+        return value;
     }
 }

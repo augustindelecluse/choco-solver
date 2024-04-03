@@ -60,48 +60,34 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
         if (!isConstraintGraphCreated()) {
             createConstraintGraph(model);
         }
+        int value;
+        // save the environment because some propagators will be set as inactive
+        model.getEnvironment().worldPush();
+        boolean objectiveReached = subSetToObjective.deactivatePropagatorsOutsideShortestPath(var);
         try {
-            // save the environment because some propagators will be set as inactive
-            model.getEnvironment().worldPush();
-            /*IntVar originalVar = isView(var) ? (IntVar) viewToClosestVariableToObjective.get((IView<?>) var) : var;
-            Set<Propagator<?>> valid = constraintsOnShortestPath.get(originalVar);
-            // removes the propagators that are not on the shortest path between the variable and the objective
-            // TODO check for onVariableUpdate? can be changed there to deactivate the variable,
-            //  perhaps better than deactivating the propagators
-            for (Propagator<?> propagator: model.getSolver().getEngine().getPropagators()) {
-                if (!valid.contains(propagator) && propagator.isActive()) {
-                    propagator.setPassive();
-                }
-            }
-             */
-            boolean objectiveReached = subSetToObjective.deactivatePropagatorsOutsideShortestPath(var);
-            // TODO objective is not always fixed when ending the search here, inspect why -> pruning
-
-            // TODO make only one worldpush and worlpop, have better calls to super methods
-            //System.out.println("deactivated");
-            int value;
             if (objectiveReached) {
                 value = super.selectValue(var);
             } else {
                 nInvalidValuesRemoved = 0;
                 value = var.getLB(); // the objective will not change by modifying this variable
             }
-            // reactivate the propagators
-            model.getEnvironment().worldPop();
-            //System.out.println("reactivated");
-
-            // removes the values that were detected as invalid
-            for (int idx = 0 ; idx < nInvalidValuesRemoved ; idx++) {
-                int val = invalidValuesRemoved[idx];
-                dop.unapply(var, val, Cause.Null);
-            }
-            return value;
         } catch (ContradictionException cex) {
             // reactivate the propagators
             model.getEnvironment().worldPop();
-            //System.out.println("reactivated");
             throw cex;
         }
+        // reactivate the propagators
+        model.getEnvironment().worldPop();
+        // removes the values that were detected as invalid
+        for (int idx = 0 ; idx < nInvalidValuesRemoved ; idx++) {
+            int val = invalidValuesRemoved[idx];
+            dop.unapply(var, val, Cause.Null);
+        }
+        if (var.getDomainSize() <= 2) {
+            // this prevents the search space exploration to not be notified of a change in the domain of the objective variable
+            model.getSolver().getEngine().propagate();
+        }
+        return value;
     }
 
 

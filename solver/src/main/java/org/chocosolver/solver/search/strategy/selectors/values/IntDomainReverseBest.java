@@ -23,8 +23,6 @@ public class IntDomainReverseBest implements IntValueSelector, IMonitorSolution,
 
     protected Model model;
     protected final IntValueSelector fallbackValueSelector;
-    protected int lb;
-    protected int ub;
     private final Function<IntVar, Boolean> trigger;
     // TODO increment value of delta after X backtrack without finding a solution
     //  and reset to 1 if a solution has just been found
@@ -57,8 +55,6 @@ public class IntDomainReverseBest implements IntValueSelector, IMonitorSolution,
             throw new RuntimeException("IntDomainReverseBest should only be used for optimisation problems");
         int delta = initDelta;
         IntVar objective = (IntVar) model.getObjective();
-        lb = objective.getLB();
-        ub = objective.getUB();
         while (true) {
             model.getEnvironment().worldPush(); // save the state
             try {
@@ -74,12 +70,33 @@ public class IntDomainReverseBest implements IntValueSelector, IMonitorSolution,
                 } else { // fix to the upper bound
                     objective.updateLowerBound(boundWithDelta(objective, rp, delta), Cause.Null);
                 }
+                // memorize the bound
+                int bound;
+                if (rp == ResolutionPolicy.MINIMIZE) {
+                    bound = objective.getLB();
+                } else {
+                    bound = objective.getUB();
+                }
                 // trigger the fixpoint and pick the best value for the variable
                 int best = selectWithPropagate(var);
+                // the bounds computed might be even better, try to use this information
+                if (rp == ResolutionPolicy.MINIMIZE) {
+                    bound = Math.max(bound, objective.getLB());
+                } else {
+                    bound = Math.min(bound, objective.getUB());
+                }
                 model.getSolver().getEngine().flush();
                 model.getEnvironment().worldPop(); // backtrack
-                lb = objective.getLB();
-                ub = objective.getUB();
+                // exploits the information on the bounds computed earlier
+                if (rp == ResolutionPolicy.MINIMIZE) {
+                    objective.updateLowerBound(bound, Cause.Null);
+                } else {
+                    objective.updateUpperBound(bound, Cause.Null);
+                }
+                if (objective.getDomainSize() <= 2) {
+                    // this prevents the search space exploration to not be notified of a change in the domain of the objective variable
+                    model.getSolver().getEngine().propagate();
+                }
                 return best;
             } catch (ContradictionException cex) {
                 model.getSolver().getEngine().flush();
@@ -93,7 +110,10 @@ public class IntDomainReverseBest implements IntValueSelector, IMonitorSolution,
                 } else {
                     objective.updateUpperBound(boundWithDelta(objective, rp, delta) - 1, Cause.Null);
                 }
-                //model.getSolver().getEngine().propagate();
+                if (objective.getDomainSize() <= 2) {
+                    // this prevents the search space exploration to not be notified of a change in the domain of the objective variable
+                    model.getSolver().getEngine().propagate();
+                }
                 delta *= 2;
             }
         }
@@ -108,8 +128,6 @@ public class IntDomainReverseBest implements IntValueSelector, IMonitorSolution,
     }
 
     protected int selectWithPropagate(IntVar variableToSelect) throws ContradictionException {
-        // TODO use relaxed fixpoint instead
-        // TODO check with calls to variable.swapOnPassivate() to deactivate propagators
         variableToSelect.getModel().getSolver().getEngine().propagate();
         if (variableToSelect.getDomainSize() == 1)
             return variableToSelect.getLB();

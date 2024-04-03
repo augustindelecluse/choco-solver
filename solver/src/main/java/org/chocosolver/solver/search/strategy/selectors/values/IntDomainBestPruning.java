@@ -197,13 +197,10 @@ public class IntDomainBestPruning implements IntValueSelector {
                 dop.unapply(var, val, Cause.Null);
             }
             // the left branch will be x = v and the right branch x != v
-            //if (var.getDomainSize() <= 2) {
+            if (var.getDomainSize() <= 2) {
                 // ensure that the fixpoint will be computed on both branches, in some cases it can be bypassed
                 var.getModel().getSolver().getEngine().propagate();
-            //} else {
-                // the fixpoint will be computed correctly with both x = v and x != v
-            //    var.getModel().getSolver().getEngine().flush();
-            //}
+            }
         }
         return bestV;
     }
