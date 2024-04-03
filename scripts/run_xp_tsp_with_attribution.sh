@@ -43,7 +43,7 @@ for ((i = 0; i < num_elements; i+=2)); do
   inputFile="inputFileTSP"
   source_file="data/tsp/attribution/instances_${memory}mb"
   rm -f $inputFile  # delete previous temporary file if it existed
-  for (( i=1; i<=$iter; i++ ))  # for each iteration
+  for (( j=1; j<=$iter; j++ ))  # for each iteration
   do
     for val in "${valueSelection[@]}"  # for each relaxation to perform
     do
