@@ -2,11 +2,12 @@ echo "compiling"
 mvn clean package -DskipTests -q
 echo "compilation done"
 # path of the executable
-launch_solver=" java -cp .:examples/target/examples-4.10.15-SNAPSHOT-jar-with-dependencies.jar org.chocosolver.examples.integer.TSPBench"
+launch_solver=" java -cp .:examples/target/examples-4.10.15-SNAPSHOT-jar-with-dependencies.jar org.chocosolver.examples.integer.QAPBench"
 currentDate=$(date +%Y-%m-%d_%H-%M-%S);  #
 commitId=$(git rev-parse HEAD)
-outFileOpt="results/tsp/tsp-opt-${commitId}-${currentDate}.csv"  # filename of the results (with the date at the end of the file)
+outFileOpt="results/qap/qap-opt-${commitId}-${currentDate}.csv"  # filename of the results (with the date at the end of the file)
 
+#valSel,Best,freqBest,PhaseSaving
 declare -a valueSelection=("GREEDY,None,1,false"
 "MIN,None,1,false"
 "MIN,Best,1,false"
@@ -18,14 +19,14 @@ iter=1   # number of iterations to account for randomness
 
 # tuples of (memory, threads)
 # index i == memory, i+1 == threads
-my_tuples=(3000 40 6000 20 12800 8 32000 4)
+my_tuples=(3000 40 6000 20 12800 10 16000 8 32000 4)
 
 # Get the number of elements in the array
 num_elements=${#my_tuples[@]}
 
 # Loop through the array two elements at a time
 echo "launching experiments in parallel"
-mkdir -p "results/tsp"  # where the results will be written
+mkdir -p "results/qap"  # where the results will be written
 rm -f $outFileOpt  # delete filename of the results if it already existed (does not delete past results, unless their datetime is the same)
 # the solver must print only one line when it is finished, otherwise we won't get a CSV at the end
 # this is the header of the csv. This header needs to change depending on the solver / type of experiment that is being run
@@ -37,9 +38,9 @@ for ((i = 0; i < num_elements; i+=2)); do
   # Access the elements that represent the tuple
   memory=${my_tuples[i]}
   nParallel=${my_tuples[i+1]}
-
-  inputFile="inputFileTSP"
-  source_file="data/tsp/attribution/instances_${memory}mb"
+  echo "running ${memory} MB instances"
+  inputFile="inputFileQAP"
+  source_file="data/qap/attribution/instances_${memory}mb"
   rm -f $inputFile  # delete previous temporary file if it existed
   for (( i=1; i<=$iter; i++ ))  # for each iteration
   do
