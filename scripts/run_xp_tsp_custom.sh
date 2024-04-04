@@ -15,7 +15,6 @@ declare -a valueSelection=("GREEDY,None,1,false"
 "MIN,ReverseBestSubset,1,false")  # each value selection to try
 timeout="00h30m00s"  # timeout in seconds
 iter=1   # number of iterations to account for randomness
-nParallel=30  # number of parallel run (should be <= number of threads on the machine, but small enough to fit in memory)
 
 mkdir -p "results/tsp"  # where the results will be written
 rm -f $outFileOpt  # delete filename of the results if it already existed (does not delete past results, unless their datetime is the same)
@@ -34,7 +33,7 @@ do
   do
     # extracts the instances from the data folder
     # write one line per instance containing its filename, along with the relaxation to perform
-    find data/tsp/uncompressed -type f | sed "s/$/-${val}/"  >> $inputFile
+    find data/tsp/custom -type f | sed "s/$/-${val}/"  >> $inputFile
   done
 done
 # at this point, the input file contains rows in the format
@@ -43,7 +42,7 @@ echo "launching experiments in parallel"
 # search with
 # - variable selection: DOMWDEG and last conflict
 # - value selection input
-cat $inputFile | parallel -j $nParallel --colsep '-' $launch_solver -f -varh DOMWDEG -lc 1 -valsel {2} -restarts NONE,0,1.0,0,false -limit ${timeout} {1} >> $outFileOpt
+cat $inputFile | parallel --colsep '-' $launch_solver -f -varh DOMWDEG -lc 1 -valsel {2} -restarts NONE,0,1.0,0,false -limit ${timeout} {1} >> $outFileOpt
 # delete the temporary file
 echo "experiments have been run"
 rm -f $inputFile
