@@ -32,6 +32,8 @@ public class CompactConstraintNetwork {
     }
 
     public VarNode getVarNode(Variable var) {
+        if (var == null)
+            return null;
         return varNodes.get(var);
     }
 
@@ -161,10 +163,13 @@ public class CompactConstraintNetwork {
                 int shortestPath = Integer.MAX_VALUE;
                 Variable bestVar = null;
                 for (Variable concrete: concreteVars) {
-                    int distance = varNodes.get(concrete).distanceToObjective;
-                    if (distance < shortestPath) {
-                        bestVar = concrete;
-                        shortestPath = distance;
+                    VarNode n = varNodes.get(concrete);
+                    if (n != null) {
+                        int distance = n.distanceToObjective;
+                        if (distance < shortestPath) {
+                            bestVar = concrete;
+                            shortestPath = distance;
+                        }
                     }
                 }
                 viewToClosestVariableToObjective.put((IView<?>) var, bestVar);
