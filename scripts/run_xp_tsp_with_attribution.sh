@@ -60,6 +60,7 @@ for ((i = 0; i < num_elements; i+=2)); do
   cat $inputFile | parallel -j $nParallel --colsep '-' $launch_solver -f -varh DOMWDEG -lc 1 -valsel {2} -restarts NONE,0,1.0,0,false -limit ${timeout} {1} >> $outFileOpt
   # delete the temporary file
   rm -f $inputFile
+  sleep 5
 done
 
 echo "experiments have been run"
