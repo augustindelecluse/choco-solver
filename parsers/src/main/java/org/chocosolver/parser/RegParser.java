@@ -134,7 +134,7 @@ public abstract class RegParser implements IParser {
             depends = {"-f"},
             forbids = {"-valh", "-best", "-bestRate", "-last"},
             usage = "Define the variable selector to use. Expected format: [valh,best,bestRate,last] " +
-                    "as [String,boolean,int,boolean]  -- no space allowed.")
+                    "as [String,String,int,boolean]  -- no space allowed.")
     public SearchParams.ValSelConf valsel;
 
     @Option(name = "-restarts",

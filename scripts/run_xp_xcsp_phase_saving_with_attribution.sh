@@ -47,7 +47,7 @@ for ((i = 0; i < num_elements; i+=2)); do
     do
       # extracts the instances from the data folder
       # write one line per instance containing its filename, along with the relaxation to perform
-      cat $source_file | sed "s/$/-${val}/"  >> $inputFile
+      cat $source_file | sed "s/$/:${val}/"  >> $inputFile
     done
   done
   # at this point, the input file contains rows in the format
@@ -55,7 +55,7 @@ for ((i = 0; i < num_elements; i+=2)); do
   # search with
   # - variable selection: DOMWDEG and last conflict
   # - value selection input
-  cat $inputFile | parallel -j $nParallel --colsep '-' $launch_solver -f -varh DOMWDEG -lc 1 -valsel {2} -restarts NONE,0,1.0,0,false -limit ${timeout} {1} >> $outFileOpt
+  cat $inputFile | parallel -j $nParallel --colsep ':' $launch_solver -f -varh DOMWDEG -lc 1 -valsel {2} -restarts NONE,0,1.0,0,false -limit ${timeout} {1} >> $outFileOpt
   # delete the temporary file
   rm -f $inputFile
   sleep 5
