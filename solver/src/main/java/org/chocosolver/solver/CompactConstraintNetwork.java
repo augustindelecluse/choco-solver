@@ -22,7 +22,8 @@ public class CompactConstraintNetwork {
     private Map<Variable, VarNode> varNodes = new HashMap<>();
     private Map<IView<?>, Variable> viewToClosestVariableToObjective = new HashMap<>();
     private Variable objective;
-    protected Set<Variable> processedVariables = new HashSet<>(); // variables already processed
+    protected Set<Variable> processedVariables = new HashSet<>(); // variables already processed (all of them)
+    protected Set<Variable> variablesInScope = new HashSet<>(); // variables already processed in the scope of a constraint
     protected Set<Propagator<?>> processedContraints = new HashSet<>(); // constraints already processed
     protected Queue<Variable> parentVars = new ArrayDeque<>(); // variables to process at the current iteration
     protected Set<Variable> childVars = new HashSet<>(); // new variables to process for the next iteration
@@ -67,6 +68,7 @@ public class CompactConstraintNetwork {
         public boolean isActive() {
             return propagator.isActive() && !goingTowardObjective.isInstantiated();
         }
+
     }
 
     private static boolean isConcreteVar(Variable variable) {
@@ -131,9 +133,10 @@ public class CompactConstraintNetwork {
                         if (!processedContraints.contains(p)) {
                             // for each new discovered constraint
                             processedContraints.add(p);
+                            variablesInScope.clear();
                             for (Variable variable : p.getVars()) {
                                 for (Variable child : getConcreteVars(variable)) {
-                                    if (!processedVariables.contains(child) && !isConstant(child)) {
+                                    if (!processedVariables.contains(child) && !isConstant(child) && !variablesInScope.contains(child)) {
                                         // stores the path for reaching this variable
                                         childVars.add(child);
                                         if (!varNodes.containsKey(child)) {
@@ -141,6 +144,7 @@ public class CompactConstraintNetwork {
                                         }
                                         varNodes.get(child).addParent(new DirectedPropagatorEdge(p, parent, child));
                                     }
+                                    variablesInScope.add(child);
                                 }
                             }
                         }
