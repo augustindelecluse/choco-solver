@@ -190,7 +190,7 @@ public class JobShopBench extends BenchParser {
         IntVar capacity = model.intVar("capacity", 1);
         for (int i = 0; i < jobShopInstance.nJobs; i++) {
             for (int j = 0; j < jobShopInstance.nMachines; j++) {
-                start[i][j] = model.intVar("start_"+i+"_"+j, 0, jobShopInstance.horizon);
+                start[i][j] = model.intVar("start_"+i+"_"+j+"_M" + jobShopInstance.machine[i][j], 0, jobShopInstance.horizon);
                 end[i][j] = model.offset(start[i][j], jobShopInstance.duration[i][j]);
             }
         }
@@ -212,7 +212,7 @@ public class JobShopBench extends BenchParser {
 
             for (int a1 = 0; a1 < start_m.length; a1++) {
                 for (int a2 = a1+1; a2 < start_m.length ; a2++) {
-                    BoolVar a1_before_a2 = model.boolVar();
+                    BoolVar a1_before_a2 = model.boolVar(start_m[a1].getName().replace("start", "end") + " < " + start_m[a2].getName());
                     BoolVar a2_before_a1 = model.boolNotView(a1_before_a2);
                     Constraint end_a1_before_start_a2 = precedence(end_m[a1], start_m[a2]);
                     Constraint end_a2_before_start_a1 = precedence(end_m[a2], start_m[a1]);
