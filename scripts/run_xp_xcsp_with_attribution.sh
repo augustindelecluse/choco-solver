@@ -8,11 +8,16 @@ commitId=$(git rev-parse HEAD)
 outFileOpt="results/xcsp/xcsp-opt-${commitId}-${currentDate}.csv"  # filename of the results (with the date at the end of the file)
 
 #valSel,Best,freqBest,PhaseSaving
-declare -a valueSelection=("MIN,None,1,false"
-"MIN,Best,1,false"
-"MIN,BestSubset,1,false"
-"MIN,ReverseBest,1,false"
-"MIN,ReverseBestSubset,1,false")  # each value selection to try
+#declare -a valueSelection=("MIN,None,1,false"
+#"MIN,Best,1,false"
+#"MIN,BestSubset,1,false"
+#"MIN,ReverseBest,1,false"
+#"MIN,ReverseBestSubset,1,false")  # each value selection to try
+declare -a valueSelection=("MAX,None,1,false"
+"MED,None,1,false"
+"RAND,None,1,false"
+"MIN,BestSubsetInf,1,false"
+"MIN,BestInf,1,false")  # each value selection to try
 timeout="00h30m00s"  # timeout in seconds
 iter=1   # number of iterations to account for randomness
 

@@ -17,6 +17,8 @@ import org.chocosolver.solver.search.strategy.assignments.DecisionOperator;
 import org.chocosolver.solver.search.strategy.assignments.DecisionOperatorFactory;
 import org.chocosolver.solver.variables.IntVar;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
@@ -44,8 +46,7 @@ public class IntDomainBestPruning implements IntValueSelector {
 
     private final Function<IntVar, Boolean> trigger;
     protected boolean pruning;   // TODO pruning activation seems to prevent the triggering of some constraints
-    protected final int[] invalidValuesRemoved;
-    protected int nInvalidValuesRemoved = 0;
+    protected final List<Integer> invalidValuesRemoved;
 
     /**
      * Create a value selector that returns the best value wrt to the objective to optimize.
@@ -75,7 +76,7 @@ public class IntDomainBestPruning implements IntValueSelector {
         this.fallbackValueSelector = intValueSelector;
         this.trigger = trigger;
         this.pruning = pruning;
-        invalidValuesRemoved = new int[maxdom];
+        invalidValuesRemoved = new ArrayList<>();
     }
 
     /**
@@ -160,7 +161,7 @@ public class IntDomainBestPruning implements IntValueSelector {
             return fallbackValueSelector.selectValue(var);
         }
         assert var.getModel().getObjective() != null;
-        nInvalidValuesRemoved = 0;
+        invalidValuesRemoved.clear();
         int bestV;
 
         if (var.getModel().getResolutionPolicy() != ResolutionPolicy.SATISFACTION) {
@@ -191,9 +192,8 @@ public class IntDomainBestPruning implements IntValueSelector {
                 bestV = lbB < ubB ? var.getLB() : var.getUB();
             }
         }
-        if (pruning && nInvalidValuesRemoved > 0) {
-            for (int i = 0 ; i < nInvalidValuesRemoved ; i++) {
-                int val = invalidValuesRemoved[i];
+        if (pruning && !invalidValuesRemoved.isEmpty()) {
+            for (int val: invalidValuesRemoved) {
                 dop.unapply(var, val, Cause.Null);
             }
             // the left branch will be x = v and the right branch x != v
@@ -226,7 +226,7 @@ public class IntDomainBestPruning implements IntValueSelector {
         if (pruning && !valid && removeIfInvalid) {
             // removes the value if the operation failed
             //dop.unapply(var, val, Cause.Null);
-            invalidValuesRemoved[nInvalidValuesRemoved++] = val;
+            invalidValuesRemoved.add(val);
         }
         return cost;
     }

@@ -12,6 +12,7 @@ package org.chocosolver.solver.search.strategy;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.restart.*;
+import org.chocosolver.solver.search.strategy.assignments.DecisionOperatorFactory;
 import org.chocosolver.solver.search.strategy.selectors.values.*;
 import org.chocosolver.solver.search.strategy.selectors.variables.*;
 import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
@@ -100,7 +101,9 @@ public interface SearchParams {
         REVERSEBEST,
         REVERSEBESTSUBSET,
         REVERSEBESTMANUAL,
-        NONE
+        NONE,
+        BESTINF,
+        BESTSUBSETINF
     }
 
     /**
@@ -419,6 +422,12 @@ public interface SearchParams {
                     break;
                 case NONE:
                     fn1 = fn0;
+                    break;
+                case BESTINF:
+                    fn1 = m -> new IntDomainBest(Integer.MAX_VALUE, fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0, DecisionOperatorFactory.makeIntEq(), (k, v) -> false);
+                    break;
+                case BESTSUBSETINF:
+                    fn1 = m -> new IntDomainBestSubset(Integer.MAX_VALUE, fn0.apply(m), v -> m.getSolver().getRestartCount() % bestFreq == 0, DecisionOperatorFactory.makeIntEq(), (k, v) -> false, true);
                     break;
             }
             final Function<Model, IntValueSelector> fn2;

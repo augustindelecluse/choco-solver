@@ -68,7 +68,7 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
             if (objectiveReached) {
                 value = super.selectValue(var);
             } else {
-                nInvalidValuesRemoved = 0;
+                invalidValuesRemoved.clear();
                 value = var.getLB(); // the objective will not change by modifying this variable
             }
         } catch (ContradictionException cex) {
@@ -79,8 +79,7 @@ public class IntDomainBestSubset extends IntDomainBestPruning {
         // reactivate the propagators
         model.getEnvironment().worldPop();
         // removes the values that were detected as invalid
-        for (int idx = 0 ; idx < nInvalidValuesRemoved ; idx++) {
-            int val = invalidValuesRemoved[idx];
+        for (int val: invalidValuesRemoved) {
             dop.unapply(var, val, Cause.Null);
         }
         if (var.getDomainSize() <= 2) {
