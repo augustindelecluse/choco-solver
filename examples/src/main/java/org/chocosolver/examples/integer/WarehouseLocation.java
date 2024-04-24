@@ -14,7 +14,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.search.loop.monitors.IMonitorSolution;
 import org.chocosolver.solver.search.strategy.Search;
-import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMiddle;
+import org.chocosolver.solver.search.strategy.selectors.values.*;
 import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
 import org.chocosolver.solver.search.strategy.selectors.variables.Smallest;
 import org.chocosolver.solver.search.strategy.selectors.variables.VariableSelectorWithTies;
@@ -45,7 +45,7 @@ import static org.chocosolver.util.tools.ArrayUtils.append;
 public class WarehouseLocation extends AbstractProblem {
 
     @Option(name = "-d", aliases = "--data", usage = "Warehouse location instance.", required = false)
-    Data data = Data.small;
+    Data data = Data.large;
 
     int W, S, C;
     int[] K;
@@ -109,9 +109,29 @@ public class WarehouseLocation extends AbstractProblem {
                 new VariableSelectorWithTies<>(
                         new FirstFail(model),
                         new Smallest()),
-                new IntDomainMiddle(false),
-                append(supplier, cost, open)));
+                //new IntDomainMiddle(false),
+                new IntDomainBestSubset(),
+                append(supplier)));
     }
+
+    /*
+     * 10s timeout, branching only on the suppliers
+     *
+     * middle
+     * Model[Model-0], 49 Solutions, MINIMIZE C = 829, Resolution time 10.000s, Time to best solution 0.824s, 1116472 Nodes (111,644.7 n/s), 2232797 Backtracks, 0 Backjumps, 1116362 Fails, 0 Restarts
+     *
+     * reverse best
+     * Model[Model-0], 30 Solutions, MINIMIZE C = 856, Resolution time 10.000s, Time to best solution 5.988s, 384561 Nodes (38,455.2 n/s), 769014 Backtracks, 0 Backjumps, 384492 Fails, 0 Restarts
+     *
+     * reverse best subset
+     * Model[Model-0], 31 Solutions, MINIMIZE C = 856, Resolution time 10.000s, Time to best solution 4.777s, 405836 Nodes (40,582.8 n/s), 811556 Backtracks, 0 Backjumps, 405762 Fails, 0 Restarts
+     *
+     * best
+     * Model[Model-0], 1 Solutions, MINIMIZE C = 766, Resolution time 10.000s, Time to best solution 0.024s, 275929 Nodes (27,592.2 n/s), 551815 Backtracks, 0 Backjumps, 275916 Fails, 0 Restarts
+     *
+     * bestsubset
+     * Model[Model-0], 3 Solutions, MINIMIZE C = 766, Resolution time 10.000s, Time to best solution 0.054s, 389410 Nodes (38,939.8 n/s), 778777 Backtracks, 0 Backjumps, 389393 Fails, 0 Restarts
+     */
 
     @Override
     public void solve() {
@@ -120,6 +140,7 @@ public class WarehouseLocation extends AbstractProblem {
         solver.plugMonitor((IMonitorSolution) () -> prettyPrint());
         solver.showShortStatistics();
         solver.getObjectiveManager().setCutComputer(obj -> obj);
+        solver.limitTime("00h00m10s");
         solver.findOptimalSolution(tot_cost, false);
 //        model.setObjective(ResolutionPolicy.MINIMIZE, tot_cost);
 //        while (solver.solve()) {

@@ -28,7 +28,7 @@ public class TSP {
     public static void main(String[] args) {
         // GR17 is a set of 17 cities, from TSPLIB. The minimal tour has length 2085.
         // number of cities
-        /*int C = 17;
+        int C = 17;
         // matrix of distances
         int[][] D = new int[][]{
                 {0, 633, 257, 91, 412, 150, 80, 134, 259, 505, 353, 324, 70, 211, 268, 246, 121},
@@ -48,15 +48,6 @@ public class TSP {
                 {268, 420, 53, 239, 199, 123, 207, 165, 383, 240, 140, 448, 202, 57, 0, 483, 153},
                 {246, 745, 472, 237, 528, 364, 332, 349, 202, 685, 542, 157, 289, 426, 483, 0, 336},
                 {121, 518, 142, 84, 297, 35, 29, 36, 236, 390, 238, 301, 55, 96, 153, 336, 0}
-        };
-         */
-        int C = 4;
-        // matrix of distances
-        int[][] D = new int[][]{
-                {0, 15, 20, 12},
-                {15, 0, 12, 20},
-                {20, 12, 0, 15},
-                {12, 20, 15, 0},
         };
 
         // A new model instance
@@ -94,11 +85,15 @@ public class TSP {
         model.setObjective(Model.MINIMIZE, totDist);
         Solver solver = model.getSolver();
         Solution lastSol = solver.defaultSolution();
-        solver.setSearch(
-                Search.intVarSearch(
-                        new DomOverWDeg<>(succ, 42),
-                        new IntDomainLast(lastSol, new IntDomainReverseBest(model), null),
-                        succ)
+        solver.setSearch(Search.intVarSearch(
+                new DomOverWDeg<>(succ, 42), // succ are the decision variables
+                //new IntDomainLast(lastSol, new IntDomainReverseBest(model), null), // RLA
+                //new IntDomainReverseBest(model), // RLA
+                //new IntDomainReverseBestSubset(model), // RLA+RF
+                //new IntDomainBest((k, v) -> false), // BIVS
+                new IntDomainBestSubset(), // BIVS+RF
+                //new IntDomainMin(), // MIN
+                succ) // succ are the decision variables
         );
         solver.showShortStatistics();
         while (solver.solve()) {
