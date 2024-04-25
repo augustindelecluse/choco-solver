@@ -1,6 +1,7 @@
 This repository contains the source code of the paper "Black-Box Value Heuristics for Solving Optimization Problems with Constraint Programming".
 
 The repository itself is a fork of [Choco-solver](https://github.com/chocoteam/choco-solver), that has been modified.
+More information on the project setup can be found there.
 
 # Classes of interest
 
@@ -11,7 +12,7 @@ The repository itself is a fork of [Choco-solver](https://github.com/chocoteam/c
   - BIVS+RF is implemented in the `IntDomainBestSubset` class (`org/chocosolver/solver/search/strategy/selectors/values/IntDomainBestSubset.java`)
   - RLA+RF is implemented in the `IntDomainReverseBestSubset` class (`org/chocosolver/solver/search/strategy/selectors/values/IntDomainReverseBestSubset.java`)
 - The models for the problems used are located within the `examples` project
-  - The TSP model can be found at `org/chocosolver/examples/integer/TSP.java`
+  - The TSP model can be found at `org/chocosolver/examples/integer/TSPBench.java`
   - The QAP model can be found at `org/chocosolver/examples/integer/QAPBench.java`
   - The JobShop model can be found at `org/chocosolver/examples/integer/JobShopBench.java`
 
@@ -35,6 +36,8 @@ solver.setSearch(Search.intVarSearch(
 The executables used for compiling the project and running the experiments are located within the `scripts` folder.
 The results of running the executables are added into the `results` folder.
 
+All scripts are meant to be run at the root of the project.
+
 The scripts of interest are:
 - `scripts/run_xp_tsp_with_attribution.sh`
   - This script requires the TSP instances to be downloaded, which can be achieved by running the `scripts/download_tsp_instances.sh` script
@@ -48,12 +51,25 @@ The requirements for running those scripts are:
 - GNU parallel
 - git
 
+Those scripts run experiments in parallel, assuming that the machine has 128GB and 40 threads at disposal.
+If you want to run the whole suite but have a different configuration, you can modify the entries
+
+```
+my_tuples=(3000 40 6000 20 12800 10 16000 8 32000 4)
+```
+
+that are defined within the script. `my_tuples[i]` with `i=0, 2, 4`, etc corresponds to the memory usage of the instances, in MB.
+`my_tuples[i+1]` with `i=0, 2, 4` is the corresponding number of threads allowed.
+Thus with the first two entries, `3000 40`, this means that 40 threads can be used to run the 3000MB instances (thus consuming 128GB). 
+If you have less than 40 threads or less than 128GB available, you should reduce the number of threads (*do not change the memory entries*).
+For instance, if you have 64GB on your machine, you should replace `3000 40` by `3000 20`, so that the consumption will be 3000MB * 20 <= 64GB (and also adapt the remaining entries), to prevent memory overflow.
+If you are interested in running only one of two instances instead of the whole suite, the corresponding scripts are found below.
+
 The pseudonyms of the methods are the following:
 - BEST: BIVS
 - REVERSEBEST: RLA
 - BESTSUBSET: BIVS+RF
 - REVERSEBESTSUBSET: RLA+RF
-
 
 # Running one instance
 
